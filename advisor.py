@@ -6,6 +6,7 @@ from json import loads
 from json import dumps
 from re import finditer
 from getAdvisorToken import * #Discord key is in a hidden file
+from aliases import * #Alternate names
 import discord
 
 def trim(x):
@@ -29,23 +30,6 @@ with open('units.json','rb') as f:
 			del unit[key]
 			pass
 		units[trim(unit['name'])]=unit
-
-async def aliases(unit):
-	unit=trim(unit)
-	if unit in ['hoemaster','hoemasters','hoemastersofswordeth']:
-		return 'swordmastersofhoeth'
-	if unit in ['lsg']:
-		return 'lothernseaguard'
-	if unit in ['hge']:
-		return 'harganethexecutioners'
-	
-	for i in units.keys():#Exact match first to not return RoR versions instead of default units, etc.
-		if unit==i:
-			return i
-	for i in units.keys():
-		if unit in i:
-			return i
-	return 404
 
 async def compactUnit(text):#Returns compact string of unit stats
 	x=units[text]
@@ -71,7 +55,10 @@ async def mainAdvisor(self,message,texts):
 	await client.get_channel(670838204265398292).send('`'+loggingMessage+'`')
 	print(loggingMessage)
 	for text in texts:
-		text=await aliases(text[0])
+		if text[0]=="zerk's beard":
+			await channel.send("**Zerk's Beard** (Facial hair, 250g): 99 size, 99 hp, 99 armour, 99 leadership, 99 speed\n*Melee:* 99 defence, 99 attack, 99 (1 base + 98 AP) damage, 99 charge bonus, 99 bonus vs ladies")
+			continue
+		text=await aliases(text[0],units)
 		if text==404:
 			continue
 		await channel.send(await compactUnit(text))
@@ -86,7 +73,6 @@ def findTexts(message):
 class MyClient(discord.Client):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.units={}
 
 	async def on_ready(self):
 		print('Logged on as', self.user)
