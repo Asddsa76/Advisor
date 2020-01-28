@@ -20,7 +20,7 @@ with open('units.json','rb') as f:
 	deleteValues=[0,'null','',None,[]]
 	deleteKeys=['factions','ground_stat_effect_group','key','tww_version','unit_card','radius',"shots_per_volley","reload_time","projectile_number"]
 	units={}
-	for unit in loads(f.read())['units']:
+	for unit in loads(f.read().decode('utf-8'))['units']:
 		toDelete=[]
 		for item in unit.items():
 			if item[1] in deleteValues or item[0] in deleteKeys:
@@ -69,6 +69,7 @@ async def mainAdvisor(self,message,texts):
 	channel=message.channel
 	loggingMessage=message.channel.guild.name+' '*(15-len(message.channel.guild.name))+message.channel.name+' '+' '*(17-len(message.channel.name))+str(message.author)+' '*(18-len(str(message.author)))+' '+message.content
 	await client.get_channel(670838204265398292).send('`'+loggingMessage+'`')
+	print(loggingMessage)
 	for text in texts:
 		text=await aliases(text[0])
 		if text==404:
