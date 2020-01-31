@@ -24,7 +24,7 @@ with open('units.json','rb') as f:
 	for unit in loads(f.read().decode('utf-8'))['units']:
 		toDelete=[]
 		for item in unit.items():
-			if item[1] in deleteValues or item[0] in deleteKeys:
+			if (item[1] in deleteValues and item[0]!='armour') or item[0] in deleteKeys:
 				toDelete.append(item[0])
 		for key in toDelete:
 			del unit[key]
@@ -56,7 +56,7 @@ async def mainAdvisor(self,message,texts):
 	print(loggingMessage)
 	for text in texts:
 		if text[0]=="zerk's beard":
-			await channel.send("**Zerk's Beard** (Facial hair, 250g): 99 size, 99 hp, 99 armour, 99 leadership, 99 speed\n*Melee:* 99 defence, 99 attack, 99 (1 base + 98 AP) damage, 99 charge bonus, 99 bonus vs ladies")
+			await channel.send("**Zerk's Beard** (Facial hair, 250g): 1 size, 9999 hp, 99 armour, 99 leadership, 99 speed\n*Melee:* 99 defence, 99 attack, 198 (99 base + 99 AP) damage, 99 charge bonus, 99 bonus vs ladies")
 			continue
 		text=await aliases(text[0],units)
 		if text==404:
