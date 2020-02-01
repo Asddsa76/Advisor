@@ -51,7 +51,7 @@ async def compactUnit(text):#Returns compact string of unit stats
 
 async def mainAdvisor(self,message,texts):
 	channel=message.channel
-	loggingMessage=message.channel.guild.name+' '*(15-len(message.channel.guild.name))+message.channel.name+' '+' '*(17-len(message.channel.name))+str(message.author)+' '*(18-len(str(message.author)))+' '+message.content
+	loggingMessage=message.channel.guild.name+' '*(15-len(message.channel.guild.name))+message.channel.name+' '+' '*(17-len(message.channel.name))+str(message.author.name)+' '*(18-len(str(message.author.name)))+' '+message.content
 	await client.get_channel(670838204265398292).send('`'+loggingMessage+'`')
 	print(loggingMessage)
 	for text in texts:

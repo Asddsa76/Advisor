@@ -11,6 +11,10 @@ async def aliases(unit,units):
 		return 'lothernseaguard'
 	if unit in ['hge']:
 		return 'harganethexecutioners'
+	if unit in ['bloaty','bloatyboy']:
+		return 'bloatedcorpse'
+	if unit in ['neverchosen']:
+		return 'archaontheeverchosen'
 	
 	for i in units.keys():#Exact match first to not return RoR versions instead of default units, etc.
 		if unit==i:
