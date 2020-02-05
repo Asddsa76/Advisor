@@ -34,14 +34,10 @@ with open('oldUnits.json','rb') as g:
 				del unit[key]
 				pass
 			oldUnit=oldUnits[trim(unit['name'])]
-			abilities=[]
 			for i in ['abilities','spells']:
-				try:
-					abilities+=[j['name'] for j in oldUnit[i]]
-				except:
-					continue
-			if abilities:
-				unit['abilities']=abilities
+				unit[i]=[j['name'] for j in oldUnit[i]]
+				if not unit[i]:
+					del unit[i]
 			units[trim(unit['name'])]=unit
 del oldUnits
 
@@ -61,8 +57,10 @@ async def compactUnit(text):#Returns compact string of unit stats
 				output+=', '+str(x['missile_bonus_v_'+i])+' bonus vs '+i
 			except:
 				continue
-	if "abilities" in x.keys():#It has spells or abilities
-		output+='\n*Spells and abilities:* '+', '.join(x['abilities'])
+	if "abilities" in x.keys():
+		output+='\n*Abilities:* '+', '.join(x['abilities'])
+	if "spells" in x.keys():#It has spells or abilities
+		output+='\n*Spells:* '+', '.join(x['spells'])
 	return output
 
 async def mainAdvisor(self,message,texts):
