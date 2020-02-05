@@ -17,19 +17,33 @@ def trim(x):
 def jprint(x): #Prints the JSON in pretty print. Not called anywhere
 	print(dumps(units[trim(x)],indent=4,sort_keys=False))
 
-with open('units.json','rb') as f:
-	deleteValues=[0,'null','',None,[]]
-	deleteKeys=['factions','ground_stat_effect_group','key','tww_version','unit_card','radius',"shots_per_volley","reload_time","projectile_number"]
-	units={}
-	for unit in loads(f.read().decode('utf-8'))['units']:
-		toDelete=[]
-		for item in unit.items():
-			if (item[1] in deleteValues and item[0]!='armour') or item[0] in deleteKeys:
-				toDelete.append(item[0])
-		for key in toDelete:
-			del unit[key]
-			pass
-		units[trim(unit['name'])]=unit
+with open('oldUnits.json','rb') as g:
+	oldUnits={}
+	for oldUnit in loads(g.read().decode('utf-8'))['units']:
+		oldUnits[trim(oldUnit['name'])]=oldUnit
+	with open('units.json','rb') as f:
+		deleteValues=[0,'null','',None,[]]
+		deleteKeys=['factions','ground_stat_effect_group','key','tww_version','unit_card','radius',"shots_per_volley","reload_time","projectile_number"]
+		units={}
+		for unit in loads(f.read().decode('utf-8'))['units']:
+			toDelete=[]
+			for item in unit.items():
+				if (item[1] in deleteValues and item[0]!='armour') or item[0] in deleteKeys:
+					toDelete.append(item[0])
+			for key in toDelete:
+				del unit[key]
+				pass
+			oldUnit=oldUnits[trim(unit['name'])]
+			abilities=[]
+			for i in ['abilities','spells']:
+				try:
+					abilities+=[j['name'] for j in oldUnit[i]]
+				except:
+					continue
+			if abilities:
+				unit['abilities']=abilities
+			units[trim(unit['name'])]=unit
+del oldUnits
 
 async def compactUnit(text):#Returns compact string of unit stats
 	x=units[text]
@@ -47,6 +61,8 @@ async def compactUnit(text):#Returns compact string of unit stats
 				output+=', '+str(x['missile_bonus_v_'+i])+' bonus vs '+i
 			except:
 				continue
+	if "abilities" in x.keys():#It has spells or abilities
+		output+='\n*Spells and abilities:* '+', '.join(x['abilities'])
 	return output
 
 async def mainAdvisor(self,message,texts):
