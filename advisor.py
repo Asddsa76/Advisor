@@ -41,6 +41,25 @@ with open('oldUnits.json','rb') as g:
 			units[trim(unit['name'])]=unit
 del oldUnits
 
+with open('spells.json','rb') as h:
+	spells={}
+	for spell in loads(h.read().decode('utf-8'))['data']['tww']['abilities']:
+		info=spell['unit_special_ability']
+		output='**'+spell['name']+'**: '
+		basicInfo=[]
+		for i in [("mana_cost",' Winds of Magic'),("recharge_time",'s'),("target_intercept_range",'m'),("mp_cost",'g')]:
+			try:#Warp hunger spells don't have any basic info
+				if i[0] in info.keys():
+					if info[i[0]] in [0,-1]:#Passives
+						continue
+					basicInfo.append(str(info[i[0]])+i[1])
+			except:
+				pass
+		output+=', '.join(basicInfo)
+		output+='\n*'+spell['tooltip'].strip()+'*'
+		
+		spells[trim(spell['name'])]=output
+
 async def compactUnit(text):#Returns compact string of unit stats
 	x=units[text]
 	output='**'+x['name']+'** ('+x['category']+', '+str(x['multiplayer_cost'])+'g): '+str(x["unit_size"])+' size, '+str(x["health"])+' hp, '+str(x["armour"])+' armour, '+str(x["leadership"])+' leadership, '+str(x["speed"])+' speed'
@@ -72,10 +91,13 @@ async def mainAdvisor(self,message,texts):
 		if text[0]=="zerk's beard":
 			await channel.send("**Zerk's Beard** (Facial hair, 250g): 1 size, 9999 hp, 99 armour, 99 leadership, 99 speed\n*Melee:* 99 defence, 99 attack, 198 (99 base + 99 AP) damage, 99 charge bonus, 99 bonus vs ladies")
 			continue
-		text=await aliases(text[0],units)
-		if text==404:
+		output=await aliases(text[0],units)
+		if output==404:
+			output=await spellAliases(text[0],spells)
+			if output!=404:
+				await channel.send(spells[output])
 			continue
-		await channel.send(await compactUnit(text))
+		await channel.send(await compactUnit(output))
 
 def findTexts(message):
 	text=message.content.lower()

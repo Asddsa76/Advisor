@@ -23,3 +23,13 @@ async def aliases(unit,units):
 		if unit in i:
 			return i
 	return 404
+
+async def spellAliases(spell,spells):
+	spell=trim(spell)
+	for i in spells.keys():#Exact match first to not return overcast, etc.
+		if spell==i:
+			return i
+	for i in spells.keys():
+		if spell in i:
+			return i
+	return 404
