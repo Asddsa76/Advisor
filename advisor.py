@@ -47,7 +47,7 @@ with open('spells.json','rb') as h:
 		info=spell['unit_special_ability']
 		output='**'+spell['name']+'**: '
 		basicInfo=[]
-		for i in [("mana_cost",' Winds of Magic'),("recharge_time",'s'),("target_intercept_range",'m'),("mp_cost",'g')]:
+		for i in [("mana_cost",'WoM'),("recharge_time",'s'),("target_intercept_range",'m'),("mp_cost",'g')]:
 			try:#Warp hunger spells don't have any basic info
 				if i[0] in info.keys():
 					if info[i[0]] in [0,-1]:#Passives
@@ -90,6 +90,9 @@ async def mainAdvisor(self,message,texts):
 	for text in texts:
 		if text[0]=="zerk's beard":
 			await channel.send("**Zerk's Beard** (Facial hair, 250g): 1 size, 9999 hp, 99 armour, 99 leadership, 99 speed\n*Melee:* 99 defence, 99 attack, 198 (99 base + 99 AP) damage, 99 charge bonus, 99 bonus vs ladies")
+			continue
+		elif text[0]=='vote':
+			await vote(message,text)
 			continue
 		output=await aliases(text[0],units)
 		if output==404:
@@ -134,6 +137,18 @@ class MyClient(discord.Client):
 		if '[' in message.content and ']' in message.content:
 			texts=findTexts(message)
 			await mainAdvisor(self,message,texts)
+
+async def vote(message,text):
+	if len(text)==2:
+		n=int(text[1])
+		if n<1 or n>9:
+			await message.channel.send('Out of range')
+			return
+		for i in range(1,n+1):
+			await message.add_reaction(str(i)+'\N{combining enclosing keycap}')
+	else:
+		await message.add_reaction('\U0001f44d')
+		await message.add_reaction('\U0001f44e')
 
 client = MyClient()
 client.run(getAdvisorToken())
