@@ -121,7 +121,6 @@ async def mainAdvisor(self,message,texts):
 					await sentMessage.add_reaction(str(i)+'\N{combining enclosing keycap}')
 				except:pass
 
-
 def findTexts(message):
 	text=message.content.lower()
 	leftBrackets=[1+m.start() for m in finditer('\[',text)]#Must escape brackets when using regex
@@ -158,7 +157,7 @@ class MyClient(discord.Client):
 			texts=findTexts(message)
 			await mainAdvisor(self,message,texts)
 		elif '[' in message.content:
-			await mainProbius(self,message,[message.content.split('[')[1].lower().split('/')])
+			await mainAdvisor(self,message,[message.content.split('[')[1].lower().split('/')])
 
 	async def on_raw_reaction_add(self,payload):
 		member=client.get_user(payload.user_id)

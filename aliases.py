@@ -27,6 +27,6 @@ async def aliases(unit,units,spells):
 			output.append(i)
 	
 	if output:
-		output.sort(key=lambda x:x[0])
+		output.sort(key=lambda x:len(x))
 		return output[:10]
 	return 404
