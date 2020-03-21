@@ -3,7 +3,7 @@ def trim(x):
 		x=x.replace(i,'')
 	return x.lower()
 
-async def aliases(unit,units):
+async def aliases(unit,units,spells):
 	unit=trim(unit)
 	if unit in ['hoemaster','hoemasters','hoemastersofswordeth']:
 		return 'swordmastersofhoeth'
@@ -15,21 +15,18 @@ async def aliases(unit,units):
 		return 'bloatedcorpse'
 	if unit in ['neverchosen']:
 		return 'archaontheeverchosen'
+	if unit in ['sos']:
+		return 'sistersofslaughter'
 	
-	for i in units.keys():#Exact match first to not return RoR versions instead of default units, etc.
-		if unit==i:
-			return i
+	output=[]
 	for i in units.keys():
 		if unit in i:
-			return i
-	return 404
-
-async def spellAliases(spell,spells):
-	spell=trim(spell)
-	for i in spells.keys():#Exact match first to not return overcast, etc.
-		if spell==i:
-			return i
+			output.append(i)
 	for i in spells.keys():
-		if spell in i:
-			return i
+		if unit in i:
+			output.append(i)
+	
+	if output:
+		output.sort(key=lambda x:x[0])
+		return output[:10]
 	return 404

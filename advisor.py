@@ -82,6 +82,13 @@ async def compactUnit(text):#Returns compact string of unit stats
 		output+='\n*Spells:* '+', '.join(x['spells'])
 	return output
 
+async def getUnitOrSpellString(unit):
+	try:
+		return spells[unit]
+	except:
+		return (await compactUnit(unit))
+
+
 async def mainAdvisor(self,message,texts):
 	channel=message.channel
 	loggingMessage=message.channel.guild.name+' '*(15-len(message.channel.guild.name))+message.channel.name+' '+' '*(17-len(message.channel.name))+str(message.author.name)+' '*(18-len(str(message.author.name)))+' '+message.content
@@ -94,13 +101,26 @@ async def mainAdvisor(self,message,texts):
 		elif text[0]=='vote':
 			await vote(message,text)
 			continue
-		output=await aliases(text[0],units)
-		if output==404:
-			output=await spellAliases(text[0],spells)
-			if output!=404:
-				await channel.send(spells[output])
+		thingsToSend=await aliases(text[0],units,spells)
+		if thingsToSend==404:
 			continue
-		await channel.send(await compactUnit(output))
+		output=await getUnitOrSpellString(thingsToSend[0])
+		if len(thingsToSend)>1:
+			output+='\n'*2
+			for i in enumerate(thingsToSend):
+				if i[0]==0:
+					pass
+				else:
+					output+=str(i[0])+' - '+i[1]+'\n'
+		sentMessage=await message.channel.send(output)
+		for i in range(len(thingsToSend)):
+			if i==0:
+				pass
+			else:
+				try:#Try because message might be deleted before all emojis are sent
+					await sentMessage.add_reaction(str(i)+'\N{combining enclosing keycap}')
+				except:pass
+
 
 def findTexts(message):
 	text=message.content.lower()
@@ -137,6 +157,20 @@ class MyClient(discord.Client):
 		if '[' in message.content and ']' in message.content:
 			texts=findTexts(message)
 			await mainAdvisor(self,message,texts)
+		elif '[' in message.content:
+			await mainProbius(self,message,[message.content.split('[')[1].lower().split('/')])
+
+	async def on_raw_reaction_add(self,payload):
+		member=client.get_user(payload.user_id)
+		if member.id==670832046389854239:#Advisor did reaction
+			return
+		message=await client.get_channel(payload.channel_id).fetch_message(payload.message_id)
+		if message.author.id==670832046389854239 and '1 - ' in message.content:#Message is from Advisor, and has a list
+			if '⃣' in str(payload.emoji):
+				number=str(payload.emoji)[0]
+				name=message.content.split(number+' - ')[1].split('\n')[0]
+				await message.channel.send(await getUnitOrSpellString(name))
+				await message.delete()
 
 async def vote(message,text):
 	if len(text)==2:
