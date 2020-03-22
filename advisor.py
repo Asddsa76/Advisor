@@ -111,7 +111,7 @@ async def mainAdvisor(self,message,texts):
 				if i[0]==0:
 					pass
 				else:
-					output+=str(i[0])+' - '+i[1]+'\n'
+					output+=str(i[0])+' - '+(await getUnitOrSpellString(i[1])).split('**')[1]+'\n'
 		sentMessage=await message.channel.send(output)
 		for i in range(len(thingsToSend)):
 			if i==0:
