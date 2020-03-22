@@ -167,7 +167,7 @@ class MyClient(discord.Client):
 		if message.author.id==670832046389854239 and '1 - ' in message.content:#Message is from Advisor, and has a list
 			if '⃣' in str(payload.emoji):
 				number=str(payload.emoji)[0]
-				name=message.content.split(number+' - ')[1].split('\n')[0]
+				name=trim(message.content.split(number+' - ')[1].split('\n')[0])
 				await message.channel.send(await getUnitOrSpellString(name))
 				await message.delete()
 
