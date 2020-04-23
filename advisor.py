@@ -41,8 +41,14 @@ with open('oldUnits.json','rb') as g:
 			unit['attributes']=[j['key'].replace('_',' ').capitalize().replace('Guerrilla','Vanguard') for j in oldUnit['attributes']]
 			if not unit['attributes']:
 				del unit['attributes']
+			unit['missile_parry']=oldUnit["parry_chance"]
+			resistances={}
+			for i in ['flame','magic','physical','missile','all']:
+				if oldUnit['damage_mod_'+i]!=0:
+					resistances[i]=oldUnit['damage_mod_'+i]
+			unit['resistances']=resistances
 			units[trim(unit['name'])]=unit
-del oldUnits
+#del oldUnits
 
 with open('spells.json','rb') as h:
 	spells={}
@@ -66,6 +72,10 @@ with open('spells.json','rb') as h:
 async def compactUnit(text):#Returns compact string of unit stats
 	x=units[text]
 	output='**'+x['name']+'** ('+x['category']+', '+str(x['multiplayer_cost'])+'g): '+str(x["unit_size"])+' size, '+str(x["health"])+' hp, '+str(x["armour"])+' armour, '+str(x["leadership"])+' leadership, '+str(x["speed"])+' speed'
+	if x['missile_parry']!=0:
+		output+=', '+str(x['missile_parry'])+'% missile parry'
+	if x['resistances']:
+		output+='\n*Resistances:* '+', '.join([str(x['resistances'][i])+'% '+i for i in x['resistances'].keys()])
 	output+='\n*Melee:* '+str(x["melee_defence"])+' defence, '+str(x["melee_attack"])+' attack, '+str(x['damage'])+' ('+str(x['base_damage'])+' base + '+str(x['ap_damage'])+' AP) damage, '+str(x["charge_bonus"])+' charge bonus'
 	for i in ['infantry','large']:
 		try:
