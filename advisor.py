@@ -38,6 +38,9 @@ with open('oldUnits.json','rb') as g:
 				unit[i]=[j['name'] for j in oldUnit[i]]
 				if not unit[i]:
 					del unit[i]
+			unit['attributes']=[j['key'].replace('_',' ').capitalize().replace('Guerrilla','Vanguard') for j in oldUnit['attributes']]
+			if not unit['attributes']:
+				del unit['attributes']
 			units[trim(unit['name'])]=unit
 del oldUnits
 
@@ -78,6 +81,8 @@ async def compactUnit(text):#Returns compact string of unit stats
 				continue
 	if "abilities" in x.keys():
 		output+='\n*Abilities:* '+', '.join(x['abilities'])
+	if "attributes" in x.keys():
+		output+='\n*Attributes:* '+', '.join(x['attributes'])
 	if "spells" in x.keys():#It has spells or abilities
 		output+='\n*Spells:* '+', '.join(x['spells'])
 	return output
@@ -170,6 +175,9 @@ class MyClient(discord.Client):
 				name=trim(message.content.split(number+' - ')[1].split('\n')[0])
 				await message.channel.send(await getUnitOrSpellString(name))
 				await message.delete()
+				loggingMessage=member.name+' reacted.'
+				await client.get_channel(670838204265398292).send('`'+loggingMessage+'`')
+				print(loggingMessage)
 
 async def vote(message,text):
 	if len(text)==2:

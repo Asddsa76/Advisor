@@ -6,17 +6,17 @@ def trim(x):
 async def aliases(unit,units,spells):
 	unit=trim(unit)
 	if unit in ['hoemaster','hoemasters','hoemastersofswordeth']:
-		return 'swordmastersofhoeth'
+		unit='swordmastersofhoeth'
 	if unit in ['lsg']:
-		return 'lothernseaguard'
+		unit='lothernseaguard'
 	if unit in ['hge']:
-		return 'harganethexecutioners'
+		unit='harganethexecutioners'
 	if unit in ['bloaty','bloatyboy']:
-		return 'bloatedcorpse'
+		unit='bloatedcorpse'
 	if unit in ['neverchosen']:
-		return 'archaontheeverchosen'
+		unit='archaontheeverchosen'
 	if unit in ['sos']:
-		return 'sistersofslaughter'
+		unit='sistersofslaughter'
 	
 	output=[]
 	for i in units.keys():
