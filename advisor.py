@@ -6,7 +6,6 @@ from json import loads
 from json import dumps
 from re import finditer
 from getAdvisorToken import * #Discord key is in a hidden file
-from aliases import * #Alternate names
 import discord
 
 def trim(x):
@@ -14,41 +13,23 @@ def trim(x):
 		x=x.replace(i,'')
 	return x.lower()
 
-def jprint(x): #Prints the JSON in pretty print. Not called anywhere
-	print(dumps(units[trim(x)],indent=4,sort_keys=False))
-
-with open('oldUnits.json','rb') as g:
-	oldUnits={}
-	for oldUnit in loads(g.read().decode('utf-8'))['units']:
-		oldUnits[trim(oldUnit['name'])]=oldUnit
-	with open('units.json','rb') as f:
-		deleteValues=[0,'null','',None,[]]
-		deleteKeys=['factions','ground_stat_effect_group','key','tww_version','unit_card','radius',"shots_per_volley","reload_time","projectile_number"]
-		units={}
-		for unit in loads(f.read().decode('utf-8'))['units']:
-			toDelete=[]
-			for item in unit.items():
-				if (item[1] in deleteValues and item[0]!='armour') or item[0] in deleteKeys:
-					toDelete.append(item[0])
-			for key in toDelete:
-				del unit[key]
-				pass
-			oldUnit=oldUnits[trim(unit['name'])]
-			for i in ['abilities','spells']:
-				unit[i]=[j['name'] for j in oldUnit[i]]
-				if not unit[i]:
-					del unit[i]
-			unit['attributes']=[j['key'].replace('_',' ').capitalize().replace('Guerrilla','Vanguard') for j in oldUnit['attributes']]
-			if not unit['attributes']:
-				del unit['attributes']
-			unit['missile_parry']=oldUnit["parry_chance"]
-			resistances={}
-			for i in ['flame','magic','physical','missile','all']:
-				if oldUnit['damage_mod_'+i]!=0:
-					resistances[i]=oldUnit['damage_mod_'+i]
-			unit['resistances']=resistances
-			units[trim(unit['name'])]=unit
-#del oldUnits
+with open('Skull_for_the_Skull_Throne_4-units.json','rb') as g:
+	units={}
+	for unit in loads(g.read().decode('utf-8')):
+		for i in ['abilities','spells']:
+			unit[i]=[j['name'] for j in unit[i]]
+			if not unit[i]:
+				del unit[i]
+		unit['attributes']=[j['key'].replace('_',' ').capitalize().replace('Guerrilla','Vanguard') for j in unit['attributes']]
+		if not unit['attributes']:
+			del unit['attributes']
+		unit['missile_parry']=unit["parry_chance"]
+		resistances={}
+		for i in ['flame','magic','physical','missile','all']:
+			if unit['damage_mod_'+i]!=0:
+				resistances[i]=unit['damage_mod_'+i]
+		unit['resistances']=resistances
+		units[trim(unit['name'])]=unit
 
 with open('spells.json','rb') as h:
 	spells={}
@@ -69,6 +50,26 @@ with open('spells.json','rb') as h:
 		
 		spells[trim(spell['name'])]=output
 
+async def aliases(unit,units,spells):
+	unit=trim(unit)
+	with open('aliases.txt','r') as f:
+		for line in f.read().split('\n'):
+			if unit in line.replace(' ','').split(':')[1].split(','):
+				unit=line.split(':')[0]
+				break
+	output=[]
+	for i in units.keys():
+		if unit in i:
+			output.append(i)
+	for i in spells.keys():
+		if unit in i:
+			output.append(i)
+	
+	if output:
+		output.sort(key=lambda x:len(x))
+		return output[:10]
+	return 404
+
 async def compactUnit(text):#Returns compact string of unit stats
 	x=units[text]
 	output='**'+x['name']+'** ('+x['category']+', '+str(x['multiplayer_cost'])+'g): '+str(x["unit_size"])+' size, '+str(x["health"])+' hp, '+str(x["armour"])+' armour, '+str(x["leadership"])+' leadership, '+str(x["speed"])+' speed'
@@ -76,17 +77,18 @@ async def compactUnit(text):#Returns compact string of unit stats
 		output+=', '+str(x['missile_parry'])+'% missile parry'
 	if x['resistances']:
 		output+='\n*Resistances:* '+', '.join([str(x['resistances'][i])+'% '+i for i in x['resistances'].keys()])
-	output+='\n*Melee:* '+str(x["melee_defence"])+' defence, '+str(x["melee_attack"])+' attack, '+str(x['damage'])+' ('+str(x['base_damage'])+' base + '+str(x['ap_damage'])+' AP) damage, '+str(x["charge_bonus"])+' charge bonus'
+	output+='\n*Melee:* '+str(x["melee_defence"])+' defence, '+str(x["melee_attack"])+' attack, '+str(x['primary_melee_weapon']['damage'])+' ('+str(x['primary_melee_weapon']['base_damage'])+' base + '+str(x['primary_melee_weapon']['ap_damage'])+' AP) damage, '+str(x["charge_bonus"])+' charge bonus'
 	for i in ['infantry','large']:
 		try:
 			output+=', '+str(x['bonus_v_'+i])+' bonus vs '+i
 		except:
 			continue
-	if "missile_damage" in x.keys():#It's a ranged unit
-		output+='\n*Ranged:* '+str(x['range'])+'m, '+str(x["missile_damage"])+' ('+str(x["missile_base_damage"])+' base + '+str(x["missile_ap_damage"])+' AP) damage'
+	if x["primary_missile_weapon"]:#It's a ranged unit
+		y=x['primary_missile_weapon']['projectile']
+		output+='\n*Ranged:* '+str(y['range'])+'m, '+str(x['primary_missile_weapon']["damage"])+' ('+str(y["base_damage"])+' base + '+str(y["ap_damage"])+' AP) damage'
 		for i in ['infantry','large']:
 			try:
-				output+=', '+str(x['missile_bonus_v_'+i])+' bonus vs '+i
+				output+=', '+str(y['missile_bonus_v_'+i])+' bonus vs '+i
 			except:
 				continue
 	if "abilities" in x.keys():
