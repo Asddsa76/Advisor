@@ -186,10 +186,7 @@ class MyClient(discord.Client):
 				number=str(payload.emoji)[0]
 				name=trim(message.content.split(number+' - ')[1].split('\n')[0])
 				await message.channel.send(await getUnitOrSpellString(name))
-				await message.delete()
-				loggingMessage=member.name+' reacted.'
-				await client.get_channel(670838204265398292).send('`'+loggingMessage+'`')
-				print(loggingMessage)
+				#await message.delete()
 
 async def vote(message,text):
 	if len(text)==2:
