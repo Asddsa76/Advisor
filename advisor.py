@@ -20,7 +20,7 @@ with open('Skull_for_the_Skull_Throne_4-units.json','rb') as g:
 			unit[i]=[j['name'] for j in unit[i]]
 			if not unit[i]:
 				del unit[i]
-		unit['attributes']=[j['key'].replace('_',' ').capitalize().replace('Guerrilla','Vanguard') for j in unit['attributes']]
+		unit['attributes']=[j['key'].capitalize().replace('Guerrilla','Vanguard').replace('Charge_reflector_vs_large','Charge defence').replace('Charge_reflector','Expert_charge_defence').replace('_',' ') for j in unit['attributes']]
 		if not unit['attributes']:
 			del unit['attributes']
 		unit['missile_parry']=unit["parry_chance"]
@@ -72,25 +72,27 @@ async def aliases(unit,units,spells):
 
 async def compactUnit(text):#Returns compact string of unit stats
 	x=units[text]
-	output='**'+x['name']+'** ('+x['category']+', '+str(x['multiplayer_cost'])+'g): '+str(x["unit_size"])+' size, '+str(x["health"])+' hp, '+str(x["armour"])+' armour, '+str(x["leadership"])+' leadership, '+str(x["speed"])+' speed'
+	output='**'+x['name']+'** ('+x['category']+', '+str(x['multiplayer_cost'])+'g): '
+	if x['unit_size']==1:
+		output+=str(x["health"])+' hp, '
+	else:
+		output+=str(x["unit_size"])+' size, '+str(x["health"])+' hp ('+str(int(x["health"]/x["unit_size"]))+' each), '
+	output+=str(x["armour"])+' armour, '+str(x["leadership"])+' leadership, '+str(x["speed"])+' speed'
 	if x['missile_parry']!=0:
 		output+=', '+str(x['missile_parry'])+'% missile parry'
 	if x['resistances']:
 		output+='\n*Resistances:* '+', '.join([str(x['resistances'][i])+'% '+i for i in x['resistances'].keys()])
-	output+='\n*Melee:* '+str(x["melee_defence"])+' defence, '+str(x["melee_attack"])+' attack, '+str(x['primary_melee_weapon']['damage'])+' ('+str(x['primary_melee_weapon']['base_damage'])+' base + '+str(x['primary_melee_weapon']['ap_damage'])+' AP) damage, '+str(x["charge_bonus"])+' charge bonus'
+	y=x['primary_melee_weapon']
+	output+='\n*Melee:* '+str(x["melee_defence"])+' defence, '+str(x["melee_attack"])+' attack, '+str(y['damage'])+' ('+str(y['base_damage'])+' base + '+str(y['ap_damage'])+' AP) damage, '+str(x["charge_bonus"])+' charge bonus'
 	for i in ['infantry','large']:
-		try:
-			output+=', '+str(x['bonus_v_'+i])+' bonus vs '+i
-		except:
-			continue
+		if y['bonus_v_'+i]: output+=', '+str(y['bonus_v_'+i])+' bonus vs '+i
+	if y['splash_attack_max_attacks']!=1:
+		output+=', splash '+str(y['splash_attack_max_attacks'])+' '+(y['splash_attack_target_size'].replace('very_large','huge') if y['splash_attack_target_size'] else 'small')
 	if x["primary_missile_weapon"]:#It's a ranged unit
 		y=x['primary_missile_weapon']['projectile']
 		output+='\n*Ranged:* '+str(y['range'])+'m, '+str(x['primary_missile_weapon']["damage"])+' ('+str(y["base_damage"])+' base + '+str(y["ap_damage"])+' AP) damage'
 		for i in ['infantry','large']:
-			try:
-				output+=', '+str(y['missile_bonus_v_'+i])+' bonus vs '+i
-			except:
-				continue
+			if y['bonus_v_'+i]: output+=', '+str(y['bonus_v_'+i])+' bonus vs '+i
 	if "abilities" in x.keys():
 		output+='\n*Abilities:* '+', '.join(x['abilities'])
 	if "attributes" in x.keys():
@@ -170,6 +172,8 @@ class MyClient(discord.Client):
 		#Don't respond to bots
 		if message.author.bot:
 			return
+		if message.channel.id==741762417976934460 and '/' in message.content:#Message was intended for Probius
+			return
 		if '[' in message.content and ']' in message.content:
 			texts=findTexts(message)
 			await mainAdvisor(self,message,texts)
@@ -178,7 +182,7 @@ class MyClient(discord.Client):
 
 	async def on_raw_reaction_add(self,payload):
 		member=client.get_user(payload.user_id)
-		if member.id==670832046389854239:#Advisor did reaction
+		if member.bot:
 			return
 		message=await client.get_channel(payload.channel_id).fetch_message(payload.message_id)
 		if message.author.id==670832046389854239 and '1 - ' in message.content:#Message is from Advisor, and has a list
