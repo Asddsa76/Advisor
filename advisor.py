@@ -185,14 +185,15 @@ class MyClient(discord.Client):
 		if member.bot:
 			return
 		message=await client.get_channel(payload.channel_id).fetch_message(payload.message_id)
-		if message.reactions[[i.emoji for i in message.reactions].index(str(payload.emoji))].count>2:#Ignore multiples of same reaction
-			return
 		if message.author.id==670832046389854239 and '1 - ' in message.content:#Message is from Advisor, and has a list
 			if '⃣' in str(payload.emoji):
-				number=str(payload.emoji)[0]
-				name=trim(message.content.split(number+' - ')[1].split('\n')[0])
-				await message.channel.send(await getUnitOrSpellString(name))
-				#await message.delete()
+				if message.reactions[[i.emoji for i in message.reactions].index(str(payload.emoji))].me:#Needs a reaction from Advisor
+					number=str(payload.emoji)[0]
+					name=trim(message.content.split(number+' - ')[1].split('\n')[0])
+					await message.channel.send(await getUnitOrSpellString(name))
+					await client.get_channel(670838204265398292).send(member.name+' reacted')
+					await message.remove_reaction(payload.emoji,message.author)#Removes reaction
+					#await message.delete()
 
 async def vote(message,text):
 	if len(text)==2:
