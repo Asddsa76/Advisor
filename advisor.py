@@ -173,7 +173,7 @@ class MyClient(discord.Client):
 		if message.author.bot:
 			return
 		if message.channel.id==741762417976934460:#Message was intended for Probius
-			if '/' in message.content or message.content=='[re]' or message.content=='[re'
+			if '/' in message.content or message.content=='[re]' or message.content=='[re':
 				return
 		if '[' in message.content and ']' in message.content:
 			texts=findTexts(message)
