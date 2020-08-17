@@ -172,8 +172,9 @@ class MyClient(discord.Client):
 		#Don't respond to bots
 		if message.author.bot:
 			return
-		if message.channel.id==741762417976934460 and '/' in message.content:#Message was intended for Probius
-			return
+		if message.channel.id==741762417976934460:#Message was intended for Probius
+			if '/' in message.content or message.content=='[re]' or message.content=='[re'
+				return
 		if '[' in message.content and ']' in message.content:
 			texts=findTexts(message)
 			await mainAdvisor(self,message,texts)
