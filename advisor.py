@@ -103,13 +103,16 @@ async def compactUnit(text):#Returns compact string of unit stats
 
 async def getUnitOrSpellString(unit):
 	try:
-		return spells[unit]
-	except:
 		return (await compactUnit(unit))
+	except:
+		return spells[unit]
 
 
 async def mainAdvisor(self,message,texts):
 	channel=message.channel
+	if message.channel.id==741762417976934460:#Message was intended for Probius
+		if '/' in message.content or message.content in ['[re', '[re]', '[rot]', '[rot']:
+			return
 	loggingMessage=message.channel.guild.name+' '*(15-len(message.channel.guild.name))+message.channel.name+' '+' '*(17-len(message.channel.name))+str(message.author.name)+' '*(18-len(str(message.author.name)))+' '+message.content
 	await client.get_channel(670838204265398292).send('`'+loggingMessage+'`')
 	print(loggingMessage)
@@ -172,9 +175,6 @@ class MyClient(discord.Client):
 		#Don't respond to bots
 		if message.author.bot:
 			return
-		if message.channel.id==741762417976934460:#Message was intended for Probius
-			if '/' in message.content or message.content=='[re]' or message.content=='[re':
-				return
 		if '[' in message.content and ']' in message.content:
 			texts=findTexts(message)
 			await mainAdvisor(self,message,texts)
