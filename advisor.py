@@ -8,6 +8,8 @@ from re import finditer
 from getAdvisorToken import * #Discord key is in a hidden file
 import discord
 
+#Commands meant for Probius
+blacklist=['d', 're', 'rot']
 def trim(x):
 	for i in ",. -'`":
 		x=x.replace(i,'')
@@ -111,7 +113,7 @@ async def getUnitOrSpellString(unit):
 async def mainAdvisor(self,message,texts):
 	channel=message.channel
 	if message.channel.id==741762417976934460:#Message was intended for Probius
-		if '/' in message.content or message.content in ['[re', '[re]', '[rot]', '[rot']:
+		if '/' in message.content or message.content in ['['+i for i in blacklist]+['['+i+']' for i in blacklist]:
 			return
 	loggingMessage=message.channel.guild.name+' '*(15-len(message.channel.guild.name))+message.channel.name+' '+' '*(17-len(message.channel.name))+str(message.author.name)+' '*(18-len(str(message.author.name)))+' '+message.content
 	await client.get_channel(670838204265398292).send('`'+loggingMessage+'`')
