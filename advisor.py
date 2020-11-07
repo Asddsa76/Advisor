@@ -2,11 +2,13 @@
 #Data provided by https://twwstats.com/
 #Project started on 25/1-2020
 
+import asyncio
+import discord
+import random
 from json import loads
 from json import dumps
 from re import finditer
 from getAdvisorToken import * #Discord key is in a hidden file
-import discord
 
 #Commands meant for Probius
 blacklist=['d', 're', 'rot']
@@ -109,6 +111,16 @@ async def getUnitOrSpellString(unit):
 	except:
 		return spells[unit]
 
+async def pick(message):
+	factions='Beastmen, Bretonnia, Dark Elves, Dwarfs, Empire, Greenskins, High Elves, Lizardmen, Norsca, Skaven, Tomb Kings, Vampire Coast, Vampire Counts, Warriros of Chaos, Wood Elves'
+	factions=factions.split(', ')
+	for vc in message.guild.voice_channels:
+		if message.author in vc.members:
+			random.seed()
+			await message.channel.send('\n'.join([i.nick or i.name +': '+random.choice(factions) for i in vc.members]))
+			return
+	else:
+		await message.channel.send("You're not in a voice channel!")
 
 async def mainAdvisor(self,message,texts):
 	channel=message.channel
@@ -118,6 +130,7 @@ async def mainAdvisor(self,message,texts):
 	loggingMessage=message.channel.guild.name+' '*(15-len(message.channel.guild.name))+message.channel.name+' '+' '*(17-len(message.channel.name))+str(message.author.name)+' '*(18-len(str(message.author.name)))+' '+message.content
 	await client.get_channel(670838204265398292).send('`'+loggingMessage+'`')
 	print(loggingMessage)
+	pickAliases=['pick']
 	for text in texts:
 		if text[0]=="zerk's beard":
 			await channel.send("**Zerk's Beard** (Facial hair, 250g): 1 size, 9999 hp, 99 armour, 99 leadership, 99 speed\n*Melee:* 99 defence, 99 attack, 198 (99 base + 99 AP) damage, 99 charge bonus, 99 bonus vs ladies")
@@ -125,6 +138,10 @@ async def mainAdvisor(self,message,texts):
 		elif text[0]=='vote':
 			await vote(message,text)
 			continue
+		elif text[0] in pickAliases:
+			await pick(message)
+			continue
+
 		thingsToSend=await aliases(text[0],units,spells)
 		if thingsToSend==404:
 			continue
@@ -210,5 +227,9 @@ async def vote(message,text):
 		await message.add_reaction('\U0001f44d')
 		await message.add_reaction('\U0001f44e')
 
-client = MyClient()
+intents = discord.Intents.default()  # All but the two privileged ones
+intents.members = True  # Subscribe to the Members intent
+
+asyncio.set_event_loop(asyncio.new_event_loop())
+client = MyClient(command_prefix='!', intents=intents)
 client.run(getAdvisorToken())
