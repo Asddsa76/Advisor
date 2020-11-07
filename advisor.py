@@ -117,7 +117,7 @@ async def pick(message):
 	for vc in message.guild.voice_channels:
 		if message.author in vc.members:
 			random.seed()
-			await message.channel.send('\n'.join([i.nick or i.name +': '+random.choice(factions) for i in vc.members]))
+			await message.channel.send('\n'.join([(i.nick or i.name) +': '+random.choice(factions) for i in vc.members]))
 			return
 	else:
 		await message.channel.send("You're not in a voice channel!")
