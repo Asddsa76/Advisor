@@ -112,7 +112,7 @@ async def getUnitOrSpellString(unit):
 		return spells[unit]
 
 async def pick(message):
-	factions='Beastmen, Bretonnia, Dark Elves, Dwarfs, Empire, Greenskins, High Elves, Lizardmen, Norsca, Skaven, Tomb Kings, Vampire Coast, Vampire Counts, Warriros of Chaos, Wood Elves'
+	factions='Beastmen, Bretonnia, Dark Elves, Dwarfs, Empire, Greenskins, High Elves, Lizardmen, Norsca, Skaven, Tomb Kings, Vampire Coast, Vampire Counts, Warriors of Chaos, Wood Elves'
 	factions=factions.split(', ')
 	for vc in message.guild.voice_channels:
 		if message.author in vc.members:
