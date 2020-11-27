@@ -111,16 +111,17 @@ async def getUnitOrSpellString(unit):
 	except:
 		return spells[unit]
 
-async def pick(message):
+
+#Voice state, sort alphabetically, P reaction
+async def pick(member,textchannel):
 	factions='Beastmen, Bretonnia, Dark Elves, Dwarfs, Empire, Greenskins, High Elves, Lizardmen, Norsca, Skaven, Tomb Kings, Vampire Coast, Vampire Counts, Warriors of Chaos, Wood Elves'
 	factions=factions.split(', ')
-	for vc in message.guild.voice_channels:
-		if message.author in vc.members:
-			random.seed()
-			await message.channel.send('\n'.join([(i.nick or i.name) +': '+random.choice(factions) for i in vc.members]))
-			return
-	else:
-		await message.channel.send("You're not in a voice channel!")
+	try:
+		random.seed()
+		message=await textchannel.send('\n'.join(sorted([(i.nick or i.name) +': '+random.choice(factions) for i in member.voice.channel.members])))
+		await message.add_reaction('🇵')
+	except:
+		await textchannel.send("You're not in a voice channel!")
 
 async def mainAdvisor(self,message,texts):
 	channel=message.channel
@@ -139,7 +140,7 @@ async def mainAdvisor(self,message,texts):
 			await vote(message,text)
 			continue
 		elif text[0] in pickAliases:
-			await pick(message)
+			await pick(message.author,message.channel)
 			continue
 
 		thingsToSend=await aliases(text[0],units,spells)
@@ -205,8 +206,11 @@ class MyClient(discord.Client):
 		if member.bot:
 			return
 		message=await client.get_channel(payload.channel_id).fetch_message(payload.message_id)
-		if message.author.id==670832046389854239 and '1 - ' in message.content:#Message is from Advisor, and has a list
-			if '⃣' in str(payload.emoji):
+		if message.author.id==670832046389854239:#Message is from Advisor, and has a list
+			if '🇵' in str(payload.emoji):
+				member=message.channel.guild.get_member(payload.user_id)
+				await pick(member,message.channel)
+			elif '⃣' in str(payload.emoji) and '1 - ' in message.content:
 				if message.reactions[[i.emoji for i in message.reactions].index(str(payload.emoji))].me:#Needs a reaction from Advisor
 					number=str(payload.emoji)[0]
 					name=trim(message.content.split(number+' - ')[1].split('\n')[0])
