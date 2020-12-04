@@ -17,7 +17,7 @@ def trim(x):
 		x=x.replace(i,'')
 	return x.lower()
 
-with open('Skull_for_the_Skull_Throne_4-units.json','rb') as g:
+with open('Twisted and Twilight.json','rb') as g:
 	units={}
 	for unit in loads(g.read().decode('utf-8')):
 		for i in ['abilities','spells']:
@@ -41,7 +41,7 @@ with open('spells.json','rb') as h:
 		info=spell['unit_special_ability']
 		output='**'+spell['name']+'**: '
 		basicInfo=[]
-		for i in [("mana_cost",'WoM'),("recharge_time",'s'),("target_intercept_range",'m'),("mp_cost",'g')]:
+		for i in [("mana_cost",' mana'),("recharge_time",'s'),("target_intercept_range",'m'),("mp_cost",' gold')]:
 			try:#Warp hunger spells don't have any basic info
 				if i[0] in info.keys():
 					if info[i[0]] in [0,-1]:#Passives
