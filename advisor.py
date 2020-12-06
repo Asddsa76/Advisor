@@ -17,6 +17,7 @@ def trim(x):
 		x=x.replace(i,'')
 	return x.lower()
 
+print('Processing units...')
 with open('Twisted and Twilight.json','rb') as g:
 	units={}
 	for unit in loads(g.read().decode('utf-8')):
@@ -35,24 +36,74 @@ with open('Twisted and Twilight.json','rb') as g:
 		unit['resistances']=resistances
 		units[trim(unit['name'])]=unit
 
-with open('spells.json','rb') as h:
+print('Processing spells...')
+with open('TTspells.json','rb') as h:
 	spells={}
-	for spell in loads(h.read().decode('utf-8'))['data']['tww']['abilities']:
-		info=spell['unit_special_ability']
+	for spell in loads(h.read().decode('utf-8')):
+		if '_bound_' in spell['key']:continue#Don't process bound spells
+		spelltype='_'.join(spell['type_key'].split('_')[2:]).replace('_',' ').capitalize()+', '
 		output='**'+spell['name']+'**: '
+		output+='*'+spell['tooltip'].strip()+'*\n'
 		basicInfo=[]
-		for i in [("mana_cost",' mana'),("recharge_time",'s'),("target_intercept_range",'m'),("mp_cost",' gold')]:
+		for i in [("sa_mana_cost",' mana'),("sa_target_intercept_range",' meters'),("sa_mp_cost",' gold'),("sa_recharge_time",'s recharge')]:
 			try:#Warp hunger spells don't have any basic info
-				if i[0] in info.keys():
-					if info[i[0]] in [0,-1]:#Passives
+				if i[0] in spell.keys():
+					if spell[i[0]] in [0,-1]:#Passives
 						continue
-					basicInfo.append(str(info[i[0]])+i[1])
+					basicInfo.append(str(spell[i[0]])+i[1])
 			except:
 				pass
-		output+=', '.join(basicInfo)
-		output+='\n*'+spell['tooltip'].strip()+'*'
-		
+		for i in [('sa_active_time','s duration'),('sa_effect_range','m radius')]:
+			try:
+				if spell[i[0]] not in [0,-1]:
+					basicInfo.append(str(spell[i[0]])+i[1])
+			except:pass
+		for i in [('sa_num_effected_friendly_units',' max units')]:
+			try:
+				if spell[i[0]] not in [1,0,-1]:
+					basicInfo.append(str(spell[i[0]])+i[1])
+			except:pass
+
+		output+=spelltype+', '.join(basicInfo)		
+	
+		dicts=['sa_phase', 'sa_projectile', 'sa_miscast_explosion_contact_phase_effect', 'sa_spawned_unit', 'sa_projectile_explosion_contact__effect', 
+		'sa_projectile_explosion', 'sa_bombardment', 'sa_projectile_contact_stat_effect', 'overpower_option', 'sa_vortex', 'sa_vortex_phase']
+		for i in dicts:
+			if i in spell.keys():x=spell[i]
+			else:continue
+			if not x:continue
+			notGarbageInfo=[]
+			damageBase=x['damage'] if 'damage' in x else 0
+			damageAP=x['damage_ap'] if 'damage_ap' in x else 0
+			if damageBase:
+				if damageAP:
+					notGarbageInfo.append('Damage: '+str(damageBase+damageAP)+' ('+str(damageBase)+' base + '+str(damageAP)+' AP)')
+				else:
+					notGarbageInfo.append('Damage: '+str(damageBase)+' base')
+			elif damageAP:
+				notGarbageInfo.append('Damage: '+str(damageAP)+' AP')
+			for j in x.items():
+				if j[0] in ['damage','damage_ap']:continue
+				if any(l in j[0] for l in ['expansion_speed','start_radius', 'change_max_angle','move_change_freq','is_magical','duration','elevation','calibration','minimum_range','frequency']):continue
+				if any(l in j[0] for l in ['shots_per_volley','projectile_number']) and j[1]==1:continue
+				if type(j[1])==type(1) and j[1] not in [0,-1]:
+					notGarbageInfo.append(j[0].replace('goal_','')+': '+str(j[1]))
+				elif type(j[1])==type(0.1):
+					notGarbageInfo.append(j[0]+': '+str(j[1]))
+				elif j[1]==True:
+					notGarbageInfo.append(j[0])
+				elif j[0]=='statEffects' and j[1]:
+					for k in j[1]:
+						notGarbageInfo.append(str(k['value'])+' '+' '.join(k['stat'].split('_')[1:]))
+			if 'damage_amount' in x and x['damage_amount']:
+				notGarbageInfo.append('total expected damage: '+str(int(x['damage_amount']*(x['ticks'] if 'ticks' in x else 1)*x['damage_chance']*x['max_damaged_entities'])))
+			if 'heal_amount' in x and x['heal_amount']:
+				notGarbageInfo.append('total healing: '+str(x['heal_amount']*x['ticks']))
+			if notGarbageInfo:
+				output+='\n'+(', '.join(sorted(notGarbageInfo))).replace('_',' ').capitalize()
+
 		spells[trim(spell['name'])]=output
+print('Logging on Discord...')
 
 async def aliases(unit,units,spells):
 	unit=trim(unit)
@@ -65,14 +116,27 @@ async def aliases(unit,units,spells):
 	for i in units.keys():
 		if unit in i:
 			output.append(i)
+			continue
+		try:
+			if unit==''.join(j[0] for j in units[i]['name'].lower().split(' ')):
+				output.append(i)
+		except:pass
 	for i in spells.keys():
 		if unit in i:
 			output.append(i)
+			continue
+		try:
+			if unit==''.join(j[0] for j in spells[i].split('**')[1].lower().split(' ')):
+				output.append(i)
+		except Exception as e:
+			pass
 	
 	if output:
 		output.sort(key=lambda x:len(x))
 		return output[:10]
 	return 404
+
+
 
 async def compactUnit(text):#Returns compact string of unit stats
 	x=units[text]
@@ -92,11 +156,19 @@ async def compactUnit(text):#Returns compact string of unit stats
 		if y['bonus_v_'+i]: output+=', '+str(y['bonus_v_'+i])+' bonus vs '+i
 	if y['splash_attack_max_attacks']!=1:
 		output+=', splash '+str(y['splash_attack_max_attacks'])+' '+(y['splash_attack_target_size'].replace('very_large','huge') if y['splash_attack_target_size'] else 'small')
+	for i in [('ignition_amount','fire'),('is_magical','magical')]:
+		if y[i[0]]:
+			output+=', '+i[1]
 	if x["primary_missile_weapon"]:#It's a ranged unit
 		y=x['primary_missile_weapon']['projectile']
-		output+='\n*Ranged:* '+str(y['range'])+'m, '+str(x['primary_missile_weapon']["damage"])+' ('+str(y["base_damage"])+' base + '+str(y["ap_damage"])+' AP) damage'
+		output+='\n*Ranged:* '+str(y['range'])+'m, '+str(y['base_reload_time'])+'s reload, '+str(x['primary_missile_weapon']["damage"])+' ('+str(y["base_damage"])+' base + '+str(y["ap_damage"])+' AP) damage'
 		for i in ['infantry','large']:
 			if y['bonus_v_'+i]: output+=', '+str(y['bonus_v_'+i])+' bonus vs '+i
+		if y['penetration_max_penetration']:
+			output+=', penetration '+str(y['penetration_max_penetration'])+' '+y['penetration_entity_size_cap']
+		for i in [('ignition_amount','fire'),('is_magical','magical')]:
+			if y[i[0]]:
+				output+=', '+i[1]
 	if "abilities" in x.keys():
 		output+='\n*Abilities:* '+', '.join(x['abilities'])
 	if "attributes" in x.keys():
@@ -108,9 +180,8 @@ async def compactUnit(text):#Returns compact string of unit stats
 async def getUnitOrSpellString(unit):
 	try:
 		return (await compactUnit(unit))
-	except:
+	except Exception as e:
 		return spells[unit]
-
 
 #Voice state, sort alphabetically, P reaction
 async def pick(member,textchannel):
@@ -142,6 +213,18 @@ async def mainAdvisor(self,message,texts):
 		elif text[0] in pickAliases:
 			await pick(message.author,message.channel)
 			continue
+		elif text[0] in ['spell','spells']:#The spells of a unit
+			unitSpells=units[(await aliases(text[1],units,{}))[0]]['spells']
+			output=''
+			for i in enumerate(unitSpells):
+				output+=str(i[0]+1)+' - '+i[1]+'\n'
+			sentMessage=await message.channel.send(output)
+			for i in range(len(unitSpells)):
+				try:#Try because message might be deleted before all emojis are sent
+					await sentMessage.add_reaction(str(i+1)+'\N{combining enclosing keycap}')
+				except:pass
+			continue
+
 
 		thingsToSend=await aliases(text[0],units,spells)
 		if thingsToSend==404:
