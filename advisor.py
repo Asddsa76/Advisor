@@ -129,11 +129,11 @@ async def aliases(unit,units,spells):
 		try:
 			if unit==''.join(j[0] for j in units[i]['name'].lower().split(' ')):
 				output.append(i)
-			elif 'The_' in i and unit==''.join([j[0] for j in units[i].split('**')[1].lower().split(' ')][1:]):
+			elif 'the'==i[:3] and unit==''.join([j[0] for j in units[i].split('**')[1].lower().split(' ')][1:]):
 				output.append(i)
 		except:pass
 	for i in spells.keys():
-		print(i)
+		print(i.encode('utf-8'))
 		if unit in i:
 			output.append(i)
 			continue
