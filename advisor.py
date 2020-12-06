@@ -45,7 +45,7 @@ with open('TTspells.json','rb') as h:
 		output='**'+spell['name']+'**: '
 		output+='*'+spell['tooltip'].strip()+'*\n'
 		basicInfo=[]
-		for i in [("sa_mana_cost",' mana'),("sa_target_intercept_range",' meters'),("sa_mp_cost",' gold'),("sa_recharge_time",'s recharge')]:
+		for i in [("sa_mp_cost",' gold'),("sa_mana_cost",' mana'),("sa_target_intercept_range",' meters'),('sa_wind_up_time','s cast time'),("sa_recharge_time",'s recharge')]:
 			try:#Warp hunger spells don't have any basic info
 				if i[0] in spell.keys():
 					if spell[i[0]] in [0,-1]:#Passives
