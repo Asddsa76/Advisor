@@ -72,7 +72,7 @@ with open('TTspells.json','rb') as h:
 			if i in spell.keys():x=spell[i]
 			else:continue
 			if not x:continue
-			notGarbageInfo=[]
+			notGarbageInfo=[]#No false booleans or uninteresting strings
 			damageBase=x['damage'] if 'damage' in x else 0
 			damageAP=x['damage_ap'] if 'damage_ap' in x else 0
 			if damageBase:
@@ -95,15 +95,24 @@ with open('TTspells.json','rb') as h:
 				elif j[0]=='statEffects' and j[1]:
 					for k in j[1]:
 						notGarbageInfo.append(str(k['value'])+' '+' '.join(k['stat'].split('_')[1:]))
+				elif j[0]=='attributeEffects' and j[1]:
+					for k in j[1]:
+						notGarbageInfo.append(k['attribute'].replace('_',' '))
 			if 'damage_amount' in x and x['damage_amount']:
-				notGarbageInfo.append('total expected damage: '+str(int(x['damage_amount']*(x['ticks'] if 'ticks' in x else 1)*x['damage_chance']*x['max_damaged_entities'])))
+				#Damage chance is rolled against each model, until successes is qeual to the max damaged entities
+				notGarbageInfo.append('total damage: '+str(int(x['damage_amount']*(x['duration']/x['hp_change_frequency'] if 'ticks' in x else 1)*x['max_damaged_entities']))+' ('+str(int(x['damage_amount']*(x['duration']/x['hp_change_frequency'] if 'ticks' in x else 1)*x['damage_chance']*x['max_damaged_entities']))+' vs single entities)')
 			if 'heal_amount' in x and x['heal_amount']:
-				notGarbageInfo.append('total healing: '+str(x['heal_amount']*x['ticks']))
+				notGarbageInfo.append('total healing: '+str(int(x['heal_amount']*x['duration']/x['hp_change_frequency'])))
 			if notGarbageInfo:
 				output+='\n'+(', '.join(sorted(notGarbageInfo))).replace('_',' ').capitalize()
 
 		spells[trim(spell['name'])]=output
 print('Logging on Discord...')
+
+#Soul stealer damage did 7 ticks, not 5
+#Soul stealer healing did 24 ticks, not 23
+#Regrowth 59 ticks, not 57
+#Final Transmutation 8, 7
 
 async def aliases(unit,units,spells):
 	unit=trim(unit)
