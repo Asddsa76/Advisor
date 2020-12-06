@@ -83,7 +83,7 @@ with open('TTspells.json','rb') as h:
 			elif damageAP:
 				notGarbageInfo.append('Damage: '+str(damageAP)+' AP')
 			for j in x.items():
-				if j[0] in ['damage','damage_ap']:continue
+				if j[0] in ['damage','damage_ap','ticks']:continue
 				if any(l in j[0] for l in ['expansion_speed','start_radius', 'change_max_angle','move_change_freq','is_magical','duration','elevation','calibration','minimum_range','frequency']):continue
 				if any(l in j[0] for l in ['shots_per_volley','projectile_number']) and j[1]==1:continue
 				if type(j[1])==type(1) and j[1] not in [0,-1]:
