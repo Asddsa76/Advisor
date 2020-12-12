@@ -99,7 +99,7 @@ with open('TTspells.json','rb') as h:
 					for k in j[1]:
 						notGarbageInfo.append(k['attribute'].replace('_',' '))
 			if 'damage_amount' in x and x['damage_amount']:
-				#Damage chance is rolled against each model, until successes is qeual to the max damaged entities
+				#Damage chance is rolled against each model, until successes is equal to the max damaged entities
 				notGarbageInfo.append('total damage: '+str(int(x['damage_amount']*(x['duration']/x['hp_change_frequency'] if 'ticks' in x else 1)*x['max_damaged_entities']))+' ('+str(int(x['damage_amount']*(x['duration']/x['hp_change_frequency'] if 'ticks' in x else 1)*x['damage_chance']*x['max_damaged_entities']))+' vs single entities)')
 			if 'heal_amount' in x and x['heal_amount']:
 				notGarbageInfo.append('total healing: '+str(int(x['heal_amount']*x['duration']/x['hp_change_frequency'])))
@@ -177,8 +177,8 @@ async def compactUnit(text):#Returns compact string of unit stats
 		output+='\n*Ranged:* '+str(y['range'])+'m, '+str(y['base_reload_time'])+'s reload, '+str(x['primary_missile_weapon']["damage"])+' ('+str(y["base_damage"])+' base + '+str(y["ap_damage"])+' AP) damage'
 		for i in ['infantry','large']:
 			if y['bonus_v_'+i]: output+=', '+str(y['bonus_v_'+i])+' bonus vs '+i
-		if y['penetration_max_penetration']:
-			output+=', penetration '+str(y['penetration_max_penetration'])+' '+y['penetration_entity_size_cap']
+		if y['penetration_max_penetration'] and y['penetration_entity_size_cap']!='very_small':#Only spider hatchlings are very small
+			output+=', penetration '+str(y['penetration_max_penetration'])+' '+y['penetration_entity_size_cap'].replace('_',' ')
 		for i in [('ignition_amount','fire'),('is_magical','magical')]:
 			if y[i[0]]:
 				output+=', '+i[1]
@@ -210,7 +210,7 @@ async def pick(member,textchannel):
 async def mainAdvisor(self,message,texts):
 	channel=message.channel
 	if message.channel.id==741762417976934460:#Message was intended for Probius
-		if '/' in message.content or message.content in ['['+i for i in blacklist]+['['+i+']' for i in blacklist]:
+		if message.content in ['['+i for i in blacklist]+['['+i+']' for i in blacklist]:
 			return
 	loggingMessage=message.channel.guild.name+' '*(15-len(message.channel.guild.name))+message.channel.name+' '+' '*(17-len(message.channel.name))+str(message.author.name)+' '*(18-len(str(message.author.name)))+' '+message.content
 	await client.get_channel(670838204265398292).send('`'+loggingMessage+'`')
