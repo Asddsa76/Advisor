@@ -260,11 +260,18 @@ async def mainAdvisor(self,message,texts):
 				except:pass
 
 def findTexts(message):
-	text=message.content.lower()
-	leftBrackets=[1+m.start() for m in finditer('\[',text)]#Must escape brackets when using regex
-	rightBrackets=[m.start() for m in finditer('\]',text)]
-	texts=[text[leftBrackets[i]:rightBrackets[i]].split('/') for i in range(len(leftBrackets))]
-	return texts
+	allTexts=[]
+	wholeText=message.content.lower()
+	for text in wholeText.split('\n'):
+		if '>' in text and '<' not in text:#This line is a quote
+			continue
+		leftBrackets=[1+m.start() for m in finditer('\[',text)]#Must escape brackets when using regex
+		rightBrackets=[m.start() for m in finditer('\]',text)]
+		texts=[text[leftBrackets[i]:rightBrackets[i]].split('/') for i in range(len(rightBrackets))]
+		if len(leftBrackets)>len(rightBrackets):#One extra unclosed at end
+			texts.append(text[leftBrackets[-1]:].split('/'))
+		allTexts+=texts
+	return allTexts
 
 class MyClient(discord.Client):
 	def __init__(self, *args, **kwargs):
