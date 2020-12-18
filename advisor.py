@@ -21,6 +21,8 @@ print('Processing units...')
 with open('Twisted and Twilight.json','rb') as g:
 	units={}
 	for unit in loads(g.read().decode('utf-8')):
+		if '_summoned_' in unit['key']:
+			continue
 		for i in ['abilities','spells']:
 			unit[i]=[j['name'] for j in unit[i]]
 			if not unit[i]:
@@ -207,6 +209,9 @@ async def pick(member,textchannel):
 	except:
 		await textchannel.send("You're not in a voice channel!")
 
+async def pickMaps(channel):
+	await channel.send('1. Fall of Man\n2. Fall of Man\n3. Fall of Man')
+
 async def mainAdvisor(self,message,texts):
 	channel=message.channel
 	if message.channel.id==741762417976934460:#Message was intended for Probius
@@ -219,6 +224,9 @@ async def mainAdvisor(self,message,texts):
 	for text in texts:
 		if text[0]=="zerk's beard":
 			await channel.send("**Zerk's Beard** (Facial hair, 250g): 1 size, 9999 hp, 99 armour, 99 leadership, 99 speed\n*Melee:* 99 defence, 99 attack, 198 (99 base + 99 AP) damage, 99 charge bonus, 99 bonus vs ladies")
+			continue
+		elif text[0] in ['pickmap','map','maps','pickmaps']:
+			await pickMaps(message.channel)
 			continue
 		elif text[0]=='vote':
 			await vote(message,text)
