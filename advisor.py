@@ -209,8 +209,11 @@ async def pick(member,textchannel):
 	except:
 		await textchannel.send("You're not in a voice channel!")
 
-async def pickMaps(channel):
-	await channel.send('1. Fall of Man\n2. Fall of Man\n3. Fall of Man')
+async def pickMaps(channel,client):
+	maps=(await client.get_channel(714829266822496256).fetch_message(789818744569856010)).content.split('\n')
+	random.seed()
+	threeMaps=random.sample(maps,3)
+	await channel.send('\n'.join(str(i+1)+'. '+threeMaps[i] for i in range(3)))
 
 async def mainAdvisor(self,message,texts):
 	channel=message.channel
@@ -226,7 +229,7 @@ async def mainAdvisor(self,message,texts):
 			await channel.send("**Zerk's Beard** (Facial hair, 250g): 1 size, 9999 hp, 99 armour, 99 leadership, 99 speed\n*Melee:* 99 defence, 99 attack, 198 (99 base + 99 AP) damage, 99 charge bonus, 99 bonus vs ladies")
 			continue
 		elif text[0] in ['pickmap','map','maps','pickmaps']:
-			await pickMaps(message.channel)
+			await pickMaps(message.channel,self)
 			continue
 		elif text[0]=='vote':
 			await vote(message,text)
