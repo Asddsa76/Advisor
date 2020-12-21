@@ -9,6 +9,7 @@ from json import loads
 from json import dumps
 from re import finditer
 from getAdvisorToken import * #Discord key is in a hidden file
+from chevrons import *
 
 #Commands meant for Probius
 blacklist=['d', 're', 'rot']
@@ -16,6 +17,63 @@ def trim(x):
 	for i in ",. -'`":
 		x=x.replace(i,'')
 	return x.lower()
+
+async def mainAdvisor(self,message,texts):
+	channel=message.channel
+	if message.channel.id==741762417976934460:#Message was intended for Probius
+		if message.content in ['['+i for i in blacklist]+['['+i+']' for i in blacklist]:
+			return
+	loggingMessage=message.channel.guild.name+' '*(15-len(message.channel.guild.name))+message.channel.name+' '+' '*(17-len(message.channel.name))+str(message.author.name)+' '*(18-len(str(message.author.name)))+' '+message.content
+	await client.get_channel(670838204265398292).send('`'+loggingMessage+'`')
+	print(loggingMessage)
+	for text in texts:
+		if text[0]=="zerk's beard":
+			await channel.send("**Zerk's Beard** (Facial hair, 250g): 1 size, 9999 hp, 99 armour, 99 leadership, 99 speed\n*Melee:* 99 defence, 99 attack, 198 (99 base + 99 AP) damage, 99 charge bonus, 99 bonus vs ladies")
+			continue
+		elif text[0] in ['chevron','chevrons']:
+			await chevrons(message.channel,text[1])
+			continue
+		elif text[0] in ['pickmap','map','maps','pickmaps']:
+			await pickMaps(message.channel,self)
+			continue
+		elif text[0]=='vote':
+			await vote(message,text)
+			continue
+		elif text[0] in ['pick']:
+			await pick(message.author,message.channel)
+			continue
+		elif text[0] in ['spell','spells']:#The spells of a unit
+			unitSpells=units[(await aliases(text[1],units,{}))[0]]['spells']
+			output=''
+			for i in enumerate(unitSpells):
+				output+=str(i[0]+1)+' - '+i[1]+'\n'
+			sentMessage=await message.channel.send(output)
+			for i in range(len(unitSpells)):
+				try:#Try because message might be deleted before all emojis are sent
+					await sentMessage.add_reaction(str(i+1)+'\N{combining enclosing keycap}')
+				except:pass
+			continue
+
+
+		thingsToSend=await aliases(text[0],units,spells)
+		if thingsToSend==404:
+			continue
+		output=await getUnitOrSpellString(thingsToSend[0])
+		if len(thingsToSend)>1:
+			output+='\n'*2
+			for i in enumerate(thingsToSend):
+				if i[0]==0:
+					pass
+				else:
+					output+=str(i[0])+' - '+(await getUnitOrSpellString(i[1])).split('**')[1]+'\n'
+		sentMessage=await message.channel.send(output)
+		for i in range(len(thingsToSend)):
+			if i==0:
+				pass
+			else:
+				try:#Try because message might be deleted before all emojis are sent
+					await sentMessage.add_reaction(str(i)+'\N{combining enclosing keycap}')
+				except:pass
 
 print('Processing units...')
 with open('Twisted and Twilight.json','rb') as g:
@@ -215,60 +273,7 @@ async def pickMaps(channel,client):
 	threeMaps=random.sample(maps,3)
 	await channel.send('\n'.join(str(i+1)+'. '+threeMaps[i] for i in range(3)))
 
-async def mainAdvisor(self,message,texts):
-	channel=message.channel
-	if message.channel.id==741762417976934460:#Message was intended for Probius
-		if message.content in ['['+i for i in blacklist]+['['+i+']' for i in blacklist]:
-			return
-	loggingMessage=message.channel.guild.name+' '*(15-len(message.channel.guild.name))+message.channel.name+' '+' '*(17-len(message.channel.name))+str(message.author.name)+' '*(18-len(str(message.author.name)))+' '+message.content
-	await client.get_channel(670838204265398292).send('`'+loggingMessage+'`')
-	print(loggingMessage)
-	pickAliases=['pick']
-	for text in texts:
-		if text[0]=="zerk's beard":
-			await channel.send("**Zerk's Beard** (Facial hair, 250g): 1 size, 9999 hp, 99 armour, 99 leadership, 99 speed\n*Melee:* 99 defence, 99 attack, 198 (99 base + 99 AP) damage, 99 charge bonus, 99 bonus vs ladies")
-			continue
-		elif text[0] in ['pickmap','map','maps','pickmaps']:
-			await pickMaps(message.channel,self)
-			continue
-		elif text[0]=='vote':
-			await vote(message,text)
-			continue
-		elif text[0] in pickAliases:
-			await pick(message.author,message.channel)
-			continue
-		elif text[0] in ['spell','spells']:#The spells of a unit
-			unitSpells=units[(await aliases(text[1],units,{}))[0]]['spells']
-			output=''
-			for i in enumerate(unitSpells):
-				output+=str(i[0]+1)+' - '+i[1]+'\n'
-			sentMessage=await message.channel.send(output)
-			for i in range(len(unitSpells)):
-				try:#Try because message might be deleted before all emojis are sent
-					await sentMessage.add_reaction(str(i+1)+'\N{combining enclosing keycap}')
-				except:pass
-			continue
 
-
-		thingsToSend=await aliases(text[0],units,spells)
-		if thingsToSend==404:
-			continue
-		output=await getUnitOrSpellString(thingsToSend[0])
-		if len(thingsToSend)>1:
-			output+='\n'*2
-			for i in enumerate(thingsToSend):
-				if i[0]==0:
-					pass
-				else:
-					output+=str(i[0])+' - '+(await getUnitOrSpellString(i[1])).split('**')[1]+'\n'
-		sentMessage=await message.channel.send(output)
-		for i in range(len(thingsToSend)):
-			if i==0:
-				pass
-			else:
-				try:#Try because message might be deleted before all emojis are sent
-					await sentMessage.add_reaction(str(i)+'\N{combining enclosing keycap}')
-				except:pass
 
 def findTexts(message):
 	allTexts=[]
@@ -330,8 +335,8 @@ class MyClient(discord.Client):
 					name=trim(message.content.split(number+' - ')[1].split('\n')[0])
 					await message.channel.send(await getUnitOrSpellString(name))
 					await client.get_channel(670838204265398292).send(member.name+' reacted')
-					await message.remove_reaction(payload.emoji,message.author)#Removes reaction
-					#await message.delete()
+					if message.channel.guild.id==329723018958077963:
+						await message.remove_reaction(payload.emoji,message.author)#Removes reaction
 
 async def vote(message,text):
 	if len(text)==2:
