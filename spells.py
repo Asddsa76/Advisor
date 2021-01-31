@@ -241,7 +241,7 @@ def spells(fileName):
 					if 'damage_amount' in x and x['damage_amount']:
 						#Damage chance is rolled against each model, until successes is equal to the max damaged entities
 						ticks=int(x['duration']/x['hp_change_frequency'])
-						notGarbageInfo.append(('ticks: '+str(ticks)+', ')*int('ticks' in x)+'total damage: '+str(int(x['damage_amount']*(ticks if 'ticks' in x else 1)*x['max_damaged_entities']))+' ('+str(int(x['damage_amount']*(ticks if 'ticks' in x else 1)*x['damage_chance']*x['max_damaged_entities']))+' vs single entities)')
+						notGarbageInfo.append(('ticks: '+str(ticks)+', ')*int('ticks' in x)+'total damage: '+str(int(x['damage_amount']*(ticks if 'ticks' in x else 1)*x['max_damaged_entities']))+' ('+str(int(x['damage_amount']*(ticks if 'ticks' in x else 1)*x['damage_chance']))+' vs single entities)')
 					if 'heal_amount' in x and x['heal_amount']:
 						notGarbageInfo.append('total healing: '+str(int(x['heal_amount']*x['duration']/x['hp_change_frequency'])))
 					if notGarbageInfo:
