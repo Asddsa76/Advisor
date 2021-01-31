@@ -6,13 +6,14 @@ import asyncio
 import discord
 import random
 from json import loads
-from json import dumps
 from re import finditer
 from getAdvisorToken import * #Discord key is in a hidden file
 from chevrons import *
+from units import *
+from spells import *
 
 #Commands meant for Probius
-blacklist=['d', 're', 'rot']
+blacklist=['d', 're', 'rot', 'b','all']
 def trim(x):
 	for i in ",. -'`":
 		x=x.replace(i,'')
@@ -23,14 +24,17 @@ async def mainAdvisor(self,message,texts):
 	if message.channel.id==741762417976934460:#Message was intended for Probius
 		if message.content in ['['+i for i in blacklist]+['['+i+']' for i in blacklist]:
 			return
-	loggingMessage=message.channel.guild.name+' '*(15-len(message.channel.guild.name))+message.channel.name+' '+' '*(17-len(message.channel.name))+str(message.author.name)+' '*(18-len(str(message.author.name)))+' '+message.content
+	loggingMessage=message.channel.guild.name+' '*(15-len(message.channel.guild.name))+message.channel.name+' '+' '*(25-len(message.channel.name))+str(message.author.name)+' '*(18-len(str(message.author.name)))+' '+message.content
 	await client.get_channel(670838204265398292).send('`'+loggingMessage+'`')
 	print(loggingMessage)
 	for text in texts:
 		if text[0]=="zerk's beard":
 			await channel.send("**Zerk's Beard** (Facial hair, 250g): 1 size, 9999 hp, 99 armour, 99 leadership, 99 speed\n*Melee:* 99 defence, 99 attack, 198 (99 base + 99 AP) damage, 99 charge bonus, 99 bonus vs ladies")
 			continue
-		elif text[0] in ['chevron','chevrons']:
+		elif text[0] in ['armor','armor']:
+			await message.channel.send('https://cdn.discordapp.com/attachments/787967571135037451/794952578914844672/unknown.png')
+			continue
+		elif text[0] in ['chevron','chevrons','c','ch']:
 			await chevrons(message.channel,text[1])
 			continue
 		elif text[0] in ['pickmap','map','maps','pickmaps']:
@@ -76,103 +80,10 @@ async def mainAdvisor(self,message,texts):
 				except:pass
 
 print('Processing units...')
-with open('Twisted and Twilight.json','rb') as g:
-	units={}
-	for unit in loads(g.read().decode('utf-8')):
-		if '_summoned_' in unit['key']:
-			continue
-		for i in ['abilities','spells']:
-			unit[i]=[j['name'] for j in unit[i]]
-			if not unit[i]:
-				del unit[i]
-		unit['attributes']=[j['key'].capitalize().replace('Guerrilla','Vanguard').replace('Charge_reflector_vs_large','Charge defence').replace('Charge_reflector','Expert_charge_defence').replace('_',' ') for j in unit['attributes']]
-		if not unit['attributes']:
-			del unit['attributes']
-		unit['missile_parry']=unit["parry_chance"]
-		resistances={}
-		for i in ['flame','magic','physical','missile','all']:
-			if unit['damage_mod_'+i]!=0:
-				resistances[i]=unit['damage_mod_'+i]
-		unit['resistances']=resistances
-		units[trim(unit['name'])]=unit
-
+units=units('Twisted and Twilight.json')
 print('Processing spells...')
-with open('TTspells.json','rb') as h:
-	spells={}
-	for spell in loads(h.read().decode('utf-8')):
-		if '_bound_' in spell['key']:continue#Don't process bound spells
-		spelltype='_'.join(spell['type_key'].split('_')[2:]).replace('_',' ').capitalize()+', '
-		output='**'+spell['name']+'**: '
-		output+='*'+spell['tooltip'].strip()+'*\n'
-		basicInfo=[]
-		for i in [("sa_mp_cost",' gold'),("sa_mana_cost",' mana'),("sa_target_intercept_range",' meters'),('sa_wind_up_time','s cast time'),("sa_recharge_time",'s recharge')]:
-			try:#Warp hunger spells don't have any basic info
-				if i[0] in spell.keys():
-					if spell[i[0]] in [0,-1]:#Passives
-						continue
-					basicInfo.append(str(spell[i[0]])+i[1])
-			except:
-				pass
-		for i in [('sa_active_time','s duration'),('sa_effect_range','m radius')]:
-			try:
-				if spell[i[0]] not in [0,-1]:
-					basicInfo.append(str(spell[i[0]])+i[1])
-			except:pass
-		for i in [('sa_num_effected_friendly_units',' max units')]:
-			try:
-				if spell[i[0]] not in [1,0,-1]:
-					basicInfo.append(str(spell[i[0]])+i[1])
-			except:pass
-
-		output+=spelltype+', '.join(basicInfo)		
-	
-		dicts=['sa_phase', 'sa_projectile', 'sa_miscast_explosion_contact_phase_effect', 'sa_spawned_unit', 'sa_projectile_explosion_contact__effect', 
-		'sa_projectile_explosion', 'sa_bombardment', 'sa_projectile_contact_stat_effect', 'overpower_option', 'sa_vortex', 'sa_vortex_phase']
-		for i in dicts:
-			if i in spell.keys():x=spell[i]
-			else:continue
-			if not x:continue
-			notGarbageInfo=[]#No false booleans or uninteresting strings
-			damageBase=x['damage'] if 'damage' in x else 0
-			damageAP=x['damage_ap'] if 'damage_ap' in x else 0
-			if damageBase:
-				if damageAP:
-					notGarbageInfo.append('Damage: '+str(damageBase+damageAP)+' ('+str(damageBase)+' base + '+str(damageAP)+' AP)')
-				else:
-					notGarbageInfo.append('Damage: '+str(damageBase)+' base')
-			elif damageAP:
-				notGarbageInfo.append('Damage: '+str(damageAP)+' AP')
-			for j in x.items():
-				if j[0] in ['damage','damage_ap','ticks']:continue
-				if any(l in j[0] for l in ['expansion_speed','start_radius', 'change_max_angle','move_change_freq','is_magical','duration','elevation','calibration','minimum_range','frequency']):continue
-				if any(l in j[0] for l in ['shots_per_volley','projectile_number']) and j[1]==1:continue
-				if type(j[1])==type(1) and j[1] not in [0,-1]:
-					notGarbageInfo.append(j[0].replace('goal_','')+': '+str(j[1]))
-				elif type(j[1])==type(0.1):
-					notGarbageInfo.append(j[0]+': '+str(j[1]))
-				elif j[1]==True:
-					notGarbageInfo.append(j[0])
-				elif j[0]=='statEffects' and j[1]:
-					for k in j[1]:
-						notGarbageInfo.append(str(k['value'])+' '+' '.join(k['stat'].split('_')[1:]))
-				elif j[0]=='attributeEffects' and j[1]:
-					for k in j[1]:
-						notGarbageInfo.append(k['attribute'].replace('_',' '))
-			if 'damage_amount' in x and x['damage_amount']:
-				#Damage chance is rolled against each model, until successes is equal to the max damaged entities
-				notGarbageInfo.append('total damage: '+str(int(x['damage_amount']*(x['duration']/x['hp_change_frequency'] if 'ticks' in x else 1)*x['max_damaged_entities']))+' ('+str(int(x['damage_amount']*(x['duration']/x['hp_change_frequency'] if 'ticks' in x else 1)*x['damage_chance']*x['max_damaged_entities']))+' vs single entities)')
-			if 'heal_amount' in x and x['heal_amount']:
-				notGarbageInfo.append('total healing: '+str(int(x['heal_amount']*x['duration']/x['hp_change_frequency'])))
-			if notGarbageInfo:
-				output+='\n'+(', '.join(sorted(notGarbageInfo))).replace('_',' ').capitalize()
-
-		spells[trim(spell['name'])]=output
+spells=spells('TTspells.json')
 print('Logging on Discord...')
-
-#Soul stealer damage did 7 ticks, not 5
-#Soul stealer healing did 24 ticks, not 23
-#Regrowth 59 ticks, not 57
-#Final Transmutation 8, 7
 
 async def aliases(unit,units,spells):
 	unit=trim(unit)
@@ -237,8 +148,10 @@ async def compactUnit(text):#Returns compact string of unit stats
 		output+='\n*Ranged:* '+str(y['range'])+'m, '+str(y['base_reload_time'])+'s reload, '+str(x['primary_missile_weapon']["damage"])+' ('+str(y["base_damage"])+' base + '+str(y["ap_damage"])+' AP) damage'
 		for i in ['infantry','large']:
 			if y['bonus_v_'+i]: output+=', '+str(y['bonus_v_'+i])+' bonus vs '+i
-		if y['penetration_max_penetration'] and y['penetration_entity_size_cap']!='very_small':#Only spider hatchlings are very small
-			output+=', penetration '+str(y['penetration_max_penetration'])+' '+y['penetration_entity_size_cap'].replace('_',' ')
+		try:#Grenade outriders don't have penetration in the json
+			if y['penetration_max_penetration'] and y['penetration_entity_size_cap']!='very_small':#Only spider hatchlings are very small
+				output+=', penetration '+str(y['penetration_max_penetration'])+' '+y['penetration_entity_size_cap'].replace('_',' ')
+		except:pass
 		for i in [('ignition_amount','fire'),('is_magical','magical')]:
 			if y[i[0]]:
 				output+=', '+i[1]
@@ -256,7 +169,6 @@ async def getUnitOrSpellString(unit):
 	except Exception as e:
 		return spells[unit]
 
-#Voice state, sort alphabetically, P reaction
 async def pick(member,textchannel):
 	factions='Beastmen, Bretonnia, Dark Elves, Dwarfs, Empire, Greenskins, High Elves, Lizardmen, Norsca, Skaven, Tomb Kings, Vampire Coast, Vampire Counts, Warriors of Chaos, Wood Elves'
 	factions=factions.split(', ')

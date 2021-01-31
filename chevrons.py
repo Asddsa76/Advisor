@@ -1,5 +1,6 @@
 import itertools
 
+#Cumulative chevron cost: base*mult+fixed
 mult=[0.03, 0.06, 0.09, 0.12, 0.14, 0.17, 0.2, 0.23, 0.26]
 fixed=[9, 18, 28, 40, 52, 65, 79, 94, 110]
 
