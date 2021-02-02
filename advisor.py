@@ -28,10 +28,13 @@ async def mainAdvisor(self,message,texts):
 	await client.get_channel(670838204265398292).send('`'+loggingMessage+'`')
 	print(loggingMessage)
 	for text in texts:
-		if text[0]=="zerk's beard":
+		if text[0].replace(' ','').replace("'",'')=="zerksbeard":
 			await channel.send("**Zerk's Beard** (Facial hair, 250g): 1 size, 9999 hp, 99 armour, 99 leadership, 99 speed\n*Melee:* 99 defence, 99 attack, 198 (99 base + 99 AP) damage, 99 charge bonus, 99 bonus vs ladies")
 			continue
-		elif text[0] in ['armor','armor']:
+		elif text[0] in ['a','avatar']:
+			await getAvatar(self,message.channel,text[1])
+			continue
+		elif text[0] in ['armour','armor']:
 			await message.channel.send('https://cdn.discordapp.com/attachments/787967571135037451/794952578914844672/unknown.png')
 			continue
 		elif text[0] in ['chevron','chevrons','c','ch']:
@@ -246,6 +249,17 @@ class MyClient(discord.Client):
 					await client.get_channel(670838204265398292).send(member.name+' reacted')
 					if message.channel.guild.id==329723018958077963:
 						await message.remove_reaction(payload.emoji,message.author)#Removes reaction
+
+async def getAvatar(client,channel,userMention):
+	u=userMention.replace(' ','').replace('!','').replace('<','').replace('>','').replace('@','').lower()
+	if u.isnumeric():
+		user=client.get_user(int(u))
+	else:
+		try:
+			user=[i for i in channel.guild.members if i.name.lower()==u or i.nick and i.nick.lower()==u][0]
+		except:
+			return
+	await channel.send(user.avatar_url)
 
 async def vote(message,text):
 	if len(text)==2:
