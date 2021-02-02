@@ -213,24 +213,21 @@ class MyClient(discord.Client):
 		#Don't respond to bots
 		if after.author.bot:
 			return
-		if '[' in after.content and ']' in after.content:
+		if '[' in after.content:
 			try:
 				beforeTexts=findTexts(before)
 			except:
 				beforeTexts=[]
 			newTexts=[i for i in findTexts(after) if i not in beforeTexts]
-			if newTexts:#Nonempty lists have boolean value true
+			if newTexts:
 				await mainAdvisor(self,after,newTexts)
 
 	async def on_message(self, message):
 		#Don't respond to bots
 		if message.author.bot:
 			return
-		if '[' in message.content and ']' in message.content:
-			texts=findTexts(message)
-			await mainAdvisor(self,message,texts)
-		elif '[' in message.content:
-			await mainAdvisor(self,message,[message.content.split('[')[1].lower().split('/')])
+		if '[' in message.content:
+			await mainAdvisor(self,message,findTexts(message))
 
 	async def on_raw_reaction_add(self,payload):
 		member=client.get_user(payload.user_id)

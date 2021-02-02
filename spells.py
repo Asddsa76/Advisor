@@ -8,15 +8,18 @@ def trim(x):
 def spells(fileName):
 	with open(fileName,'rb') as h:
 		spells={}
+		spellJSON=[]
+		ocJSON={}
 		for spell in loads(h.read().decode('utf-8')):
 			if '_bound' in spell['key']:continue#Don't process bound spells
-			if '_upgraded' in spell['key']:continue#Overcast
-			if spell['has_overcast']==True:
-				with open(fileName,'rb') as f:
-					for i in loads(f.read().decode('utf-8')):
-						if spell['overpower_option']['key']==i['key']:
-							oc=i#Overcast version
+			if '_upgraded' in spell['key']:#Overcast
+				ocJSON[spell['key']]=spell
+			else:
+				spellJSON.append(spell)
 
+		for spell in spellJSON:
+			if spell['has_overcast']==True:
+				oc=ocJSON[spell['overpower_option']['key']]
 				output='**'+spell['name']+'**: '
 				output+='*'+spell['tooltip'].strip()+'*\n'
 				basicInfo=[]
