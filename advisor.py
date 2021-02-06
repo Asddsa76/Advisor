@@ -24,6 +24,8 @@ async def mainAdvisor(self,message,texts):
 	if message.channel.id==741762417976934460:#Message was intended for Probius
 		if message.content in ['['+i for i in blacklist]+['['+i+']' for i in blacklist]:
 			return
+		if '[b/' in message.content:
+			return
 	loggingMessage=message.channel.guild.name+' '*(15-len(message.channel.guild.name))+message.channel.name+' '+' '*(25-len(message.channel.name))+str(message.author.name)+' '*(18-len(str(message.author.name)))+' '+message.content
 	await client.get_channel(670838204265398292).send('`'+loggingMessage+'`')
 	print(loggingMessage)

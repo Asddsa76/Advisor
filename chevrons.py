@@ -9,7 +9,7 @@ async def chevrons(channel,target):
 	if target>1000:
 		await channel.send('Too much gold, just buy another unit')
 		return
-	a={'Spearmen':24, 'Rangers':27, 'Silver Helms':39}
+	a={'Spearmen':24, 'Rangers':27, 'Silver Helms':36}
 	a=sorted(list(a.items()),key=lambda i:i[1])
 	maxChevrons=[target//i[1] for i in a]
 	iterables=[range(i+1) for i in maxChevrons]
