@@ -9,7 +9,7 @@ def units(fileName):
 	with open(fileName,'rb') as g:
 		units={}
 		for unit in loads(g.read().decode('utf-8')):
-			if '_summoned_' in unit['key']:
+			if '_summoned' in unit['key']:
 				continue
 			for i in ['abilities','spells']:
 				unit[i]=[j['name'] for j in unit[i]]

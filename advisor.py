@@ -258,7 +258,7 @@ async def getAvatar(client,channel,userMention):
 		user=client.get_user(int(u))
 	else:
 		try:
-			user=[i for i in channel.guild.members if i.name.lower()==u or i.nick and i.nick.lower()==u][0]
+			user=[i for i in channel.guild.members if i.name.lower().replace(' ','')==u or i.nick and i.nick.lower().replace(' ','')==u][0]
 		except:
 			return
 	await channel.send(user.avatar_url)
