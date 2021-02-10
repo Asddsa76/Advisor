@@ -188,9 +188,8 @@ async def pickMaps(channel,client):
 	maps=(await client.get_channel(714829266822496256).fetch_message(789818744569856010)).content.split('\n')
 	random.seed()
 	threeMaps=random.sample(maps,3)
-	await channel.send('\n'.join(str(i+1)+'. '+threeMaps[i] for i in range(3)))
-
-
+	message=await channel.send('\n'.join(str(i+1)+'. '+threeMaps[i] for i in range(3)))
+	await message.add_reaction('🇲')
 
 def findTexts(message):
 	allTexts=[]
@@ -243,6 +242,8 @@ class MyClient(discord.Client):
 			if '🇵' in str(payload.emoji):
 				member=message.channel.guild.get_member(payload.user_id)
 				await pick(member,message.channel)
+			if '🇲' in str(payload.emoji):
+				await pickMaps(message.channel,self)
 			elif '⃣' in str(payload.emoji) and '1 - ' in message.content:
 				if message.reactions[[i.emoji for i in message.reactions].index(str(payload.emoji))].me:#Needs a reaction from Advisor
 					number=str(payload.emoji)[0]
