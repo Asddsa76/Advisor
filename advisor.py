@@ -135,12 +135,14 @@ async def compactUnit(text):#Returns compact string of unit stats
 	else:
 		output+=str(x["unit_size"])+' size, '+str(x["health"])+' hp ('+str(int(x["health"]/x["unit_size"]))+' each), '
 	output+=str(x["armour"])+' armour, '+str(x["leadership"])+' leadership, '+str(x["speed"])+' speed'
+	if x['run_speed']!=x["speed"]:
+		output+=' ('+str(x["run_speed"])+' on ground)'
 	if x['missile_parry']!=0:
 		output+=', '+str(x['missile_parry'])+'% missile parry'
 	if x['resistances']:
 		output+='\n*Resistances:* '+', '.join([str(x['resistances'][i])+'% '+i for i in x['resistances'].keys()])
 	y=x['primary_melee_weapon']
-	output+='\n*Melee:* '+str(x["melee_defence"])+' defence, '+str(x["melee_attack"])+' attack, '+str(y['damage'])+' ('+str(y['base_damage'])+' base + '+str(y['ap_damage'])+' AP) damage, '+str(x["charge_bonus"])+' charge bonus'
+	output+='\n*Melee:* '+str(x["melee_attack"])+' attack, '+str(x["melee_defence"])+' defence, '+str(y['damage'])+' ('+str(y['base_damage'])+' base + '+str(y['ap_damage'])+' AP) damage, '+str(x["charge_bonus"])+' charge bonus'
 	for i in ['infantry','large']:
 		if y['bonus_v_'+i]: output+=', '+str(y['bonus_v_'+i])+' bonus vs '+i
 	if y['splash_attack_max_attacks']!=1:
