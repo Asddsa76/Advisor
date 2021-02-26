@@ -103,7 +103,7 @@ async def aliases(unit,units,spells):
 			output.append(i)
 			continue
 		try:
-			if unit==''.join(j[0] for j in units[i]['name'].lower().split(' ')):
+			if unit==''.join(j[0] for j in units[i]['name'].lower().replace('-',' ').replace('(','').split(' ')):
 				output.append(i)
 			elif 'the'==i[:3] and unit==''.join([j[0] for j in units[i].split('**')[1].lower().split(' ')][1:]):
 				output.append(i)
@@ -113,7 +113,7 @@ async def aliases(unit,units,spells):
 			output.append(i)
 			continue
 		try:
-			if unit==''.join(j[0] for j in spells[i].split('**')[1].lower().split(' ')):
+			if unit==''.join(j[0] for j in spells[i].split('**')[1].lower().replace('-',' ').replace('(','').split(' ')):
 				output.append(i)
 			elif 'the'==i[:3] and unit==''.join([j[0] for j in spells[i].split('**')[1].lower().split(' ')][1:]):
 				output.append(i)
