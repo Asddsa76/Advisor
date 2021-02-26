@@ -250,7 +250,10 @@ class MyClient(discord.Client):
 				if message.reactions[[i.emoji for i in message.reactions].index(str(payload.emoji))].me:#Needs a reaction from Advisor
 					number=str(payload.emoji)[0]
 					name=trim(message.content.split(number+' - ')[1].split('\n')[0])
-					await message.channel.send(member.mention+'\n'+await getUnitOrSpellString(name))
+					if message.channel.guild.id==603924426769170433:
+						await message.channel.send(await getUnitOrSpellString(name))
+					else:
+						await message.channel.send(member.mention+'\n'+await getUnitOrSpellString(name))
 					await client.get_channel(670838204265398292).send(member.name+' reacted')
 					if message.channel.guild.id in [329723018958077963,451412889870532620]:
 						await message.remove_reaction(payload.emoji,message.author)#Removes reaction
