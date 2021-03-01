@@ -11,6 +11,8 @@ from getAdvisorToken import * #Discord key is in a hidden file
 from chevrons import *
 from units import *
 from spells import *
+from time import time
+import datetime
 
 #Commands meant for Probius
 blacklist=['d', 're', 'rot', 'b','all']
@@ -250,10 +252,11 @@ class MyClient(discord.Client):
 				if message.reactions[[i.emoji for i in message.reactions].index(str(payload.emoji))].me:#Needs a reaction from Advisor
 					number=str(payload.emoji)[0]
 					name=trim(message.content.split(number+' - ')[1].split('\n')[0])
-					if message.channel.guild.id==603924426769170433:
-						await message.channel.send(await getUnitOrSpellString(name))
+					botChannels=[329723018958077963:705442642716000266, 451412889870532620:814542781137682544]#Guild, channel
+					if message.channel.guild.id in botChannels and time()-(message.created_at - datetime.datetime.utcfromtimestamp(0)).total_seconds()>300:#Over 5min
+						await (self.get_channel(botChannels[message.channel.guild.id])).send(member.mention+'\n'+await getUnitOrSpellString(name))
 					else:
-						await message.channel.send(member.mention+'\n'+await getUnitOrSpellString(name))
+						await message.channel.send(await getUnitOrSpellString(name))
 					await client.get_channel(670838204265398292).send(member.name+' reacted')
 					if message.channel.guild.id in [329723018958077963,451412889870532620]:
 						await message.remove_reaction(payload.emoji,message.author)#Removes reaction
