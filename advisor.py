@@ -258,8 +258,6 @@ class MyClient(discord.Client):
 					else:
 						await message.channel.send(await getUnitOrSpellString(name))
 					await client.get_channel(670838204265398292).send(member.name+' reacted')
-					if message.channel.guild.id in [329723018958077963,451412889870532620]:
-						await message.remove_reaction(payload.emoji,message.author)#Removes reaction
 
 async def getAvatar(client,channel,userMention):
 	u=userMention.replace(' ','').replace('!','').replace('<','').replace('>','').replace('@','').lower()
