@@ -252,7 +252,7 @@ class MyClient(discord.Client):
 				if message.reactions[[i.emoji for i in message.reactions].index(str(payload.emoji))].me:#Needs a reaction from Advisor
 					number=str(payload.emoji)[0]
 					name=trim(message.content.split(number+' - ')[1].split('\n')[0])
-					botChannels=[329723018958077963:705442642716000266, 451412889870532620:814542781137682544]#Guild, channel
+					botChannels={329723018958077963:705442642716000266, 451412889870532620:814542781137682544}#Guild, channel
 					if message.channel.guild.id in botChannels and time()-(message.created_at - datetime.datetime.utcfromtimestamp(0)).total_seconds()>300:#Over 5min
 						await (self.get_channel(botChannels[message.channel.guild.id])).send(member.mention+'\n'+await getUnitOrSpellString(name))
 					else:
