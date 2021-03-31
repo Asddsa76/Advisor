@@ -57,7 +57,7 @@ async def mainAdvisor(self,message,texts):
 			unitSpells=units[(await aliases(text[1],units,{}))[0]]['spells']
 			output=''
 			for i in enumerate(unitSpells):
-				output+=str(i[0]+1)+' - '+i[1]+'\n'
+				output+='`'+str(i[0]+1)+'` - '+i[1]+'\n'
 			sentMessage=await message.channel.send(output)
 			for i in range(len(unitSpells)):
 				try:#Try because message might be deleted before all emojis are sent
@@ -76,7 +76,7 @@ async def mainAdvisor(self,message,texts):
 				if i[0]==0:
 					pass
 				else:
-					output+=str(i[0])+' - '+(await getUnitOrSpellString(i[1])).split('**')[1]+'\n'
+					output+='`'+str(i[0])+'` - '+(await getUnitOrSpellString(i[1])).split('**')[1]+'\n'
 		sentMessage=await message.channel.send(output)
 		for i in range(len(thingsToSend)):
 			if i==0:
@@ -87,7 +87,8 @@ async def mainAdvisor(self,message,texts):
 				except:pass
 
 print('Processing units...')
-units=units('Twisted and Twilight.json')
+#units=units('Twisted and Twilight.json')
+units=units('Rakarth.json')
 print('Processing spells...')
 spells=spells('TTspells.json')
 print('Logging on Discord...')
@@ -99,32 +100,38 @@ async def aliases(unit,units,spells):
 			if unit in line.replace(' ','').split(':')[1].split(','):
 				unit=line.split(':')[0]
 				break
-	output=[]
+	outputUnits=[]
+	outputSpells=[]
 	for i in units.keys():
 		if unit in i:
-			output.append(i)
+			outputUnits.append(i)
 			continue
 		try:
 			if unit==''.join(j[0] for j in units[i]['name'].lower().replace('-',' ').replace('(','').split(' ')):
-				output.append(i)
+				outputUnits.append(i)
 			elif 'the'==i[:3] and unit==''.join([j[0] for j in units[i].split('**')[1].lower().split(' ')][1:]):
-				output.append(i)
+				outputUnits.append(i)
 		except:pass
 	for i in spells.keys():
 		if unit in i:
-			output.append(i)
+			outputSpells.append(i)
 			continue
 		try:
 			if unit==''.join(j[0] for j in spells[i].split('**')[1].lower().replace('-',' ').replace('(','').split(' ')):
-				output.append(i)
+				outputSpells.append(i)
 			elif 'the'==i[:3] and unit==''.join([j[0] for j in spells[i].split('**')[1].lower().split(' ')][1:]):
-				output.append(i)
+				outputSpells.append(i)
 		except Exception as e:
 			pass
-	
-	if output:
-		output.sort(key=lambda x:len(x))
-		return output[:10]
+	if outputUnits:
+		outputUnits.sort(key=lambda x:len(x))
+		output=outputUnits
+	else:
+		output=[]
+	if outputSpells:
+		outputSpells.sort(key=lambda x:len(x))
+		output+=outputSpells
+	if output:return output[:10]
 	return 404
 
 
@@ -248,10 +255,10 @@ class MyClient(discord.Client):
 				await pick(member,message.channel)
 			if '🇲' in str(payload.emoji):
 				await pickMaps(message.channel,self)
-			elif '⃣' in str(payload.emoji) and '1 - ' in message.content:
+			elif '⃣' in str(payload.emoji) and '1` - ' in message.content:
 				if message.reactions[[i.emoji for i in message.reactions].index(str(payload.emoji))].me:#Needs a reaction from Advisor
 					number=str(payload.emoji)[0]
-					name=trim(message.content.split(number+' - ')[1].split('\n')[0])
+					name=trim(message.content.replace('`','').split(number+' - ')[1].split('\n')[0])
 					botChannels={329723018958077963:705442642716000266, 451412889870532620:814542781137682544}#Guild, channel
 					if message.channel.guild.id in botChannels and time()-(message.created_at - datetime.datetime.utcfromtimestamp(0)).total_seconds()>300:#Over 5min
 						await (self.get_channel(botChannels[message.channel.guild.id])).send(member.mention+'\n'+await getUnitOrSpellString(name))
