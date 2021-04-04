@@ -35,6 +35,6 @@ def units(fileName):
 				if unit['damage_mod_'+i]!=0:
 					resistances[i]=unit['damage_mod_'+i]
 			unit['resistances']=resistances
-			unit['name']=faction+unit['name']
+			unit['name']=faction+' '+unit['name']
 			units[trim(unit['name'])]=unit
 		return units

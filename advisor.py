@@ -93,7 +93,7 @@ print('Processing spells...')
 spells=spells('TTspells.json')
 print('Logging on Discord...')
 
-async def aliases(unit,units,spells):
+async def aliases(unit,units,spells):#Elements in units are dicts, elements in spells are strings
 	unit=trim(unit)
 	with open('aliases.txt','r') as f:
 		for line in f.read().split('\n'):
@@ -106,12 +106,15 @@ async def aliases(unit,units,spells):
 		if unit in i:
 			outputUnits.append(i)
 			continue
+		if units[i]['name'].count(' ')<2:
+			continue#One space for faction, one more to need an ancronym
 		try:
-			if unit==''.join(j[0] for j in units[i]['name'].lower().replace('-',' ').replace('(','').split(' ')):
+			if unit==(''.join(j[0] for j in units[i]['name'].lower().replace(' - ','-').replace('-',' ').replace('(','').split(' ')[1:])):
 				outputUnits.append(i)
-			elif 'the'==i[:3] and unit==''.join([j[0] for j in units[i].split('**')[1].lower().split(' ')][1:]):
+			elif units[i]['name'].count(' ')>2 and '>the' in i and unit==''.join([j[0] for j in units[i]['name'].lower().replace('(','').split(' ')][2:]):
 				outputUnits.append(i)
 		except:pass
+
 	for i in spells.keys():
 		if unit in i:
 			outputSpells.append(i)
@@ -120,6 +123,7 @@ async def aliases(unit,units,spells):
 			if unit==''.join(j[0] for j in spells[i].split('**')[1].lower().replace('-',' ').replace('(','').split(' ')):
 				outputSpells.append(i)
 			elif 'the'==i[:3] and unit==''.join([j[0] for j in spells[i].split('**')[1].lower().split(' ')][1:]):
+				print(spells[i])
 				outputSpells.append(i)
 		except Exception as e:
 			pass
