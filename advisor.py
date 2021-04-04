@@ -123,7 +123,6 @@ async def aliases(unit,units,spells):#Elements in units are dicts, elements in s
 			if unit==''.join(j[0] for j in spells[i].split('**')[1].lower().replace('-',' ').replace('(','').split(' ')):
 				outputSpells.append(i)
 			elif 'the'==i[:3] and unit==''.join([j[0] for j in spells[i].split('**')[1].lower().split(' ')][1:]):
-				print(spells[i])
 				outputSpells.append(i)
 		except Exception as e:
 			pass
