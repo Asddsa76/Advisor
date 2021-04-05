@@ -59,7 +59,6 @@ async def mainAdvisor(self,message,texts):
 			for i in enumerate(unitSpells):
 				output+='`'+str(i[0]+1)+'` - '+i[1]+'\n'
 			sentMessage=await message.channel.send(output)
-			await asyncio.sleep(1)#Send other messages first before reacting
 			for i in range(len(unitSpells)):
 				try:#Try because message might be deleted before all emojis are sent
 					await sentMessage.add_reaction(str(i+1)+'\N{combining enclosing keycap}')
@@ -79,7 +78,6 @@ async def mainAdvisor(self,message,texts):
 				else:
 					output+='`'+str(i[0])+'` - '+(await getUnitOrSpellString(i[1])).split('**')[1]+'\n'
 		sentMessage=await message.channel.send(output)
-		await asyncio.sleep(1)#Send other messages first before reacting
 		for i in range(len(thingsToSend)):
 			if i==0:
 				pass
