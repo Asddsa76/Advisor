@@ -14,6 +14,8 @@ from spells import *
 from time import time
 import datetime
 
+botChannels={329723018958077963:705442642716000266, 451412889870532620:814542781137682544, 603924426769170433:830117306042155008}#Guild, channel
+
 #Commands meant for Probius
 blacklist=['d', 're', 'rot', 'b','all']
 def trim(x):
@@ -45,7 +47,7 @@ async def mainAdvisor(self,message,texts):
 			await chevrons(message.channel,text[1])
 			continue
 		elif text[0] in ['pickmap','map','maps','pickmaps']:
-			await pickMaps(message.channel,self)
+			await pickMaps(message,self)
 			continue
 		elif text[0]=='vote':
 			await vote(message,text)
@@ -191,18 +193,27 @@ async def getUnitOrSpellString(unit):
 async def pick(member,textchannel):
 	factions='Beastmen, Bretonnia, Dark Elves, Dwarfs, Empire, Greenskins, High Elves, Lizardmen, Norsca, Skaven, Tomb Kings, Vampire Coast, Vampire Counts, Warriors of Chaos, Wood Elves'
 	factions=factions.split(', ')
+	output=''
+	if textchannel.guild.id in botChannels and not textchannel.id==botChannels[textchannel.guild.id]:
+		output=member.mention+'\n'
+		textchannel=client.get_channel(botChannels[textchannel.guild.id])
 	try:
 		random.seed()
-		message=await textchannel.send('\n'.join(sorted([(i.nick or i.name) +': '+random.choice(factions) for i in member.voice.channel.members])))
+		message=await textchannel.send(output+'\n'.join(sorted([(i.nick or i.name) +': '+random.choice(factions) for i in member.voice.channel.members])))
 		await message.add_reaction('🇵')
 	except:
-		await textchannel.send("You're not in a voice channel!")
+		await textchannel.send(output+"You're not in a voice channel!")
 
-async def pickMaps(channel,client):
+async def pickMaps(message,client):
+	output=''
+	channel=message.channel
+	if message.channel.guild.id in botChannels and not message.channel.id==botChannels[message.channel.guild.id]:
+		channel=client.get_channel(botChannels[message.channel.guild.id])
+		output=message.author.mention+'\n'
 	maps=(await client.get_channel(714829266822496256).fetch_message(789818744569856010)).content.split('\n')
 	random.seed()
 	threeMaps=random.sample(maps,3)
-	message=await channel.send('\n'.join(str(i+1)+'. '+threeMaps[i] for i in range(3)))
+	message=await channel.send(output+'\n'.join(str(i+1)+'. '+threeMaps[i] for i in range(3)))
 	await message.add_reaction('🇲')
 
 def findTexts(message):
@@ -257,12 +268,11 @@ class MyClient(discord.Client):
 				member=message.channel.guild.get_member(payload.user_id)
 				await pick(member,message.channel)
 			if '🇲' in str(payload.emoji):
-				await pickMaps(message.channel,self)
+				await pickMaps(message,self)
 			elif '⃣' in str(payload.emoji) and '1` - ' in message.content:
 				if message.reactions[[i.emoji for i in message.reactions].index(str(payload.emoji))].me:#Needs a reaction from Advisor
 					number=str(payload.emoji)[0]
 					name=trim(message.content.replace('`','').split(number+' - ')[1].split('\n')[0])
-					botChannels={329723018958077963:705442642716000266, 451412889870532620:814542781137682544}#Guild, channel
 					if message.channel.guild.id in botChannels and time()-(message.created_at - datetime.datetime.utcfromtimestamp(0)).total_seconds()>300:#Over 5min
 						await (self.get_channel(botChannels[message.channel.guild.id])).send(member.mention+'\n'+await getUnitOrSpellString(name))
 					else:
