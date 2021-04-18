@@ -6,7 +6,7 @@ def trim(x):
 	return x.lower()
 
 def units(fileName):
-	with open('factions.txt','rb') as f:
+	with open('Text files/factions.txt','rb') as f:
 		factions={}
 		for line in f.read().decode('utf-8').split('\n'):
 			line=line.split(', ')

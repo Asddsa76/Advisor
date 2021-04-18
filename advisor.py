@@ -90,14 +90,14 @@ async def mainAdvisor(self,message,texts):
 
 print('Processing units...')
 #units=units('Twisted and Twilight.json')
-units=units('Rakarth.json')
+units=units('Text files/Rakarth.json')
 print('Processing spells...')
-spells=spells('TTspells.json')
+spells=spells('Text files/TTspells.json')
 print('Logging on Discord...')
 
 async def aliases(unit,units,spells):#Elements in units are dicts, elements in spells are strings
 	unit=trim(unit)
-	with open('aliases.txt','r') as f:
+	with open('Text files/aliases.txt','r') as f:
 		for line in f.read().split('\n'):
 			if unit in line.replace(' ','').split(':')[1].split(','):
 				unit=line.split(':')[0]
