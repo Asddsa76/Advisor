@@ -16,7 +16,7 @@ ratlingguns: gunrat
 warpfirethrowers: firerat, flamerat, rakizharr
 ratogres: rakogri
 brightwizard: sienna
-waywatcher: kerillian
+waystalker: kerillian
 witchhunter: victorsaltzpyre, victor, saltzpyre
 empirecaptain: kruber, markuskruber
 masterengineer: bardingoreksson, bardin, goreksson
