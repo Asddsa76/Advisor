@@ -17,6 +17,6 @@ warpfirethrowers: firerat, flamerat, rakizharr
 ratogres: rakogri
 brightwizard: sienna
 waywatcher: kerillian
-witchhunter: victorsaltzpyre, victor, saltzpyre, salt
-empirecaptain: kruber, markuskruber, markus
+witchhunter: victorsaltzpyre, victor, saltzpyre
+empirecaptain: kruber, markuskruber
 masterengineer: bardingoreksson, bardin, goreksson
