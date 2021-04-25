@@ -8,7 +8,7 @@ miststalkers: mistalker
 tiktaqto: tictactoe
 chaoswarrior: rothelm, kazakidum
 marauderberserkers: frother, berzerker
-stormvermin(halberds): blackfur
+stormvermin: blackfur
 gutterrunners: assassinrat, sneakrat, stabrat, thaggoraki
 packmaster: hookrat
 poisonedwindglobadiers: gasrat, poisonwindglobadiers, poisonwind
@@ -17,6 +17,9 @@ warpfirethrowers: firerat, flamerat, rakizharr
 ratogres: rakogri
 brightwizard: sienna
 waystalker: kerillian
-witchhunter: victorsaltzpyre, victor, saltzpyre
+witchhunter: victorsaltzpyre, victor, saltzpyre, saltspyre
 empirecaptain: kruber, markuskruber
 masterengineer: bardingoreksson, bardin, goreksson
+greyseer(ruin): rasknitt
+warlord: skarrik, spinemanglr, spinemangler, skarrikspinemanglr, skarrikspinemangler
+exaltedhero: bobdvarr, ribspreader, bobdvarrribspreader, naglfahr, gatekeepernaglfahr
