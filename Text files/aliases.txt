@@ -1,8 +1,22 @@
-swordmastersofhoeth: hoemaster, hoemasters, hoemastersofswordeth
+swordmastersofhoeth: hoemaster, hoemastersofswordeth
 bloatedcorpse: bloaty, bloatyboy
 archaontheeverchosen: neverchosen
 greatbow: bowshabti
 starofavelorn: discoball, disco
 skabscrath: scabscrath, scabscratch
-miststalkers: mistalkers
+miststalkers: mistalker
 tiktaqto: tictactoe
+chaoswarrior: rothelm, kazakidum
+marauderberserkers: frother, berzerker
+stormvermin(halberds): blackfur
+gutterrunners: assassinrat, sneakrat, stabrat, thaggoraki
+packmaster: hookrat
+poisonedwindglobadiers: gasrat, poisonwindglobadiers, poisonwind
+ratlingguns: gunrat
+warpfirethrowers: firerat, flamerat, rakizharr
+ratogres: rakogri
+brightwizard: sienna
+waywatcher: kerillian
+witchhunter: victorsaltzpyre, victor, saltzpyre, salt
+empirecaptain: kruber, markuskruber, markus
+masterengineer: bardingoreksson, bardin, goreksson

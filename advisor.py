@@ -99,7 +99,7 @@ async def aliases(unit,units,spells):#Elements in units are dicts, elements in s
 	unit=trim(unit)
 	with open('Text files/aliases.txt','r') as f:
 		for line in f.read().split('\n'):
-			if unit in line.replace(' ','').split(':')[1].split(','):
+			if unit in line.replace(' ','').split(':')[1].split(',') or unit[-1]=='s' and unit[:-1] in line.replace(' ','').split(':')[1].split(','):#Plurals
 				unit=line.split(':')[0]
 				break
 	outputUnits=[]
