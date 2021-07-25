@@ -1,0 +1,92 @@
+[
+    {
+        "xp_level": 0,
+        "fatigue": 0,
+        "mp_fixed_cost": 0,
+        "mp_experience_cost_multiplier": 1,
+        "additional_melee_cp": 0,
+        "additional_missile_cp": 0,
+        "__typename": "unit_stats_land_experience_bonuse"
+    },
+    {
+        "xp_level": 1,
+        "fatigue": 0,
+        "mp_fixed_cost": 9,
+        "mp_experience_cost_multiplier": 1.03,
+        "additional_melee_cp": 26,
+        "additional_missile_cp": 26,
+        "__typename": "unit_stats_land_experience_bonuse"
+    },
+    {
+        "xp_level": 2,
+        "fatigue": 0,
+        "mp_fixed_cost": 18,
+        "mp_experience_cost_multiplier": 1.06,
+        "additional_melee_cp": 51,
+        "additional_missile_cp": 51,
+        "__typename": "unit_stats_land_experience_bonuse"
+    },
+    {
+        "xp_level": 3,
+        "fatigue": -1,
+        "mp_fixed_cost": 28,
+        "mp_experience_cost_multiplier": 1.09,
+        "additional_melee_cp": 77,
+        "additional_missile_cp": 77,
+        "__typename": "unit_stats_land_experience_bonuse"
+    },
+    {
+        "xp_level": 4,
+        "fatigue": -1,
+        "mp_fixed_cost": 40,
+        "mp_experience_cost_multiplier": 1.12,
+        "additional_melee_cp": 102,
+        "additional_missile_cp": 102,
+        "__typename": "unit_stats_land_experience_bonuse"
+    },
+    {
+        "xp_level": 5,
+        "fatigue": -2,
+        "mp_fixed_cost": 52,
+        "mp_experience_cost_multiplier": 1.14,
+        "additional_melee_cp": 128,
+        "additional_missile_cp": 128,
+        "__typename": "unit_stats_land_experience_bonuse"
+    },
+    {
+        "xp_level": 6,
+        "fatigue": -2,
+        "mp_fixed_cost": 65,
+        "mp_experience_cost_multiplier": 1.17,
+        "additional_melee_cp": 154,
+        "additional_missile_cp": 154,
+        "__typename": "unit_stats_land_experience_bonuse"
+    },
+    {
+        "xp_level": 7,
+        "fatigue": -3,
+        "mp_fixed_cost": 79,
+        "mp_experience_cost_multiplier": 1.2,
+        "additional_melee_cp": 179,
+        "additional_missile_cp": 179,
+        "__typename": "unit_stats_land_experience_bonuse"
+    },
+    {
+        "xp_level": 8,
+        "fatigue": -3,
+        "mp_fixed_cost": 94,
+        "mp_experience_cost_multiplier": 1.23,
+        "additional_melee_cp": 205,
+        "additional_missile_cp": 205,
+        "__typename": "unit_stats_land_experience_bonuse"
+    },
+    {
+        "xp_level": 9,
+        "fatigue": -4,
+        "mp_fixed_cost": 110,
+        "mp_experience_cost_multiplier": 1.26,
+        "additional_melee_cp": 230,
+        "additional_missile_cp": 230,
+        "__typename": "unit_stats_land_experience_bonuse"
+    }
+]
