@@ -90,7 +90,7 @@ async def mainAdvisor(self,message,texts):
 
 print('Processing units...')
 #units=units('Twisted and Twilight.json')
-units=units('Text files/Rakarth.json')
+units=units('Text files/units.json')
 print('Processing spells...')
 spells=spells('Text files/TTspells.json')
 print('Logging on Discord...')
@@ -139,14 +139,20 @@ async def aliases(unit,units,spells):#Elements in units are dicts, elements in s
 	if output:return output[:10]
 	return 404
 
-
+async def entitySize(x):
+	if 'small' in x['entity_size']:
+		return '<:Small:839268262365626429>'
+	else:
+		return '<:Large:839268262399574066>'
 
 async def compactUnit(text):#Returns compact string of unit stats
 	x=units[text]
 	output='**'+x['name']+'** ('+x['category']+', '+str(x['multiplayer_cost'])+'g): '
 	if x['unit_size']==1:
+		#output+=await entitySize(x)+', '
 		output+=str(x["health"])+' hp, '
 	else:
+		#output+=str(x["unit_size"])+await entitySize(x)+', '+str(x["health"])+' hp ('+str(int(x["health"]/x["unit_size"]))+' each), '
 		output+=str(x["unit_size"])+' size, '+str(x["health"])+' hp ('+str(int(x["health"]/x["unit_size"]))+' each), '
 	output+=str(x["armour"])+' armour, '+str(x["leadership"])+' leadership, '+str(x["speed"])+' speed'
 	if x['run_speed']!=x["speed"]:
@@ -182,6 +188,7 @@ async def compactUnit(text):#Returns compact string of unit stats
 		output+='\n*Attributes:* '+', '.join(x['attributes'])
 	if "spells" in x.keys():#It has spells or abilities
 		output+='\n*Spells:* '+', '.join(x['spells'])
+	#output=output.replace('bonus vs infantry','<:bvi:839268262415958046> ').replace('bonus vs large','<:bvl:839268262263914516>')
 	return output
 
 async def getUnitOrSpellString(unit):
