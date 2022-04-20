@@ -5,12 +5,22 @@ def trim(x):
 		x=x.replace(i,'')
 	return x.lower()
 
-def units(fileName):
+def getFactionIcon(unit):
 	with open('Text files/factions.txt','rb') as f:
 		factions={}
 		for line in f.read().decode('utf-8').split('\n'):
-			line=line.split(', ')
-			factions[int(line[1].replace('\r',''))]=line[0]
+			line=line.replace('\r','').split(', ')
+			factions[line[0]]=[line[1]]
+			if len(line)==3:
+				factions[line[0]].append(int(line[2]))
+
+	unitFactions=[i['name_group'] for i in unit['factions']]
+	for unitFaction in unitFactions:
+		for faction in factions:
+			if unitFaction in factions[faction]:
+				return faction
+
+def units(fileName):
 	with open(fileName,'rb') as g:
 		units={}
 		for unit in loads(g.read().decode('utf-8')):
@@ -18,10 +28,8 @@ def units(fileName):
 				continue
 			if not unit['factions']:
 				continue
-			unitFactions=[i['name_group'] for i in unit['factions']]
-			for i in factions:
-				if i in unitFactions:
-					faction=factions[i]
+			faction=getFactionIcon(unit)
+
 			for i in ['abilities','spells']:
 				unit[i]=[j['name'] for j in unit[i]]
 				if not unit[i]:
@@ -32,7 +40,7 @@ def units(fileName):
 			unit['missile_parry']=unit["parry_chance"]
 			resistances={}
 			for i in ['flame','magic','physical','missile','all']:
-				if unit['damage_mod_'+i]!=0:
+				if unit['damage_mod_'+i] not in [0, None]:
 					resistances[i]=unit['damage_mod_'+i]
 			unit['resistances']=resistances
 			unit['name']=faction+' '+unit['name']

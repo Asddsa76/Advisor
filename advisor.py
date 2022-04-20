@@ -17,7 +17,8 @@ import datetime
 botChannels={329723018958077963:705442642716000266, 451412889870532620:814542781137682544, 603924426769170433:830117306042155008}#Guild, channel
 
 #Commands meant for Probius
-blacklist=['d', 're', 'rot', 'b','all']
+blacklist=['d', 're', 'rot', 'b','all', 'sylv', 'all', 'rb', 't']
+
 def trim(x):
 	for i in ",. -'`":
 		x=x.replace(i,'')
@@ -92,7 +93,7 @@ print('Processing units...')
 #units=units('Twisted and Twilight.json')
 units=units('Text files/units.json')
 print('Processing spells...')
-spells=spells('Text files/TTspells.json')
+spells=spells('Text files/spells.json')
 print('Logging on Discord...')
 
 async def aliases(unit,units,spells):#Elements in units are dicts, elements in spells are strings
@@ -154,6 +155,8 @@ async def compactUnit(text):#Returns compact string of unit stats
 	else:
 		#output+=str(x["unit_size"])+await entitySize(x)+', '+str(x["health"])+' hp ('+str(int(x["health"]/x["unit_size"]))+' each), '
 		output+=str(x["unit_size"])+' size, '+str(x["health"])+' hp ('+str(int(x["health"]/x["unit_size"]))+' each), '
+	if x['barrier_health']!=0:
+		output+=str(x['barrier_health'])+' barrier, '
 	output+=str(x["armour"])+' armour, '+str(x["leadership"])+' leadership, '+str(x["speed"])+' speed'
 	if x['run_speed']!=x["speed"]:
 		output+=' ('+str(x["run_speed"])+' on ground)'
@@ -208,8 +211,9 @@ async def pick(member,textchannel):
 		random.seed()
 		message=await textchannel.send(output+'\n'.join(sorted([(i.nick or i.name) +': '+random.choice(factions) for i in member.voice.channel.members])))
 		await message.add_reaction('🇵')
-	except:
-		await textchannel.send(output+"You're not in a voice channel!")
+	except:#Not in voice channel
+		message=await textchannel.send(output+random.choice(factions))
+		await message.add_reaction('🇵')
 
 async def pickMaps(message,client):
 	output=''
