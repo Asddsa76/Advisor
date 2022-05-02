@@ -44,5 +44,6 @@ def units(fileName):
 					resistances[i]=unit['damage_mod_'+i]
 			unit['resistances']=resistances
 			unit['name']=faction+' '+unit['name']
-			units[trim(unit['name'])]=unit
+			trimmedName=trim(unit['name'])
+			units[trimmedName]=unit
 		return units
