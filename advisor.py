@@ -221,8 +221,8 @@ async def pickMaps(message,client):
 	if message.channel.guild.id in botChannels and not message.channel.id==botChannels[message.channel.guild.id]:
 		channel=client.get_channel(botChannels[message.channel.guild.id])
 		output=message.author.mention+'\n'
-	#maps=(await client.get_channel(714829266822496256).fetch_message(789818744569856010)).content.split('\n')
-	maps=['Fall of Man','Fall of Man','Fall of Man']
+	maps=(await client.get_channel(933467953062637628).fetch_message(1012822158445133834)).content.split('\n')[2:]
+	#maps=['Fall of Man','Fall of Man','Fall of Man']
 	random.seed()
 	threeMaps=random.sample(maps,3)
 	message=await channel.send(output+'\n'.join(str(i+1)+'. '+threeMaps[i] for i in range(3)))
