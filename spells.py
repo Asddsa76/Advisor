@@ -179,9 +179,9 @@ def spells(fileName):
 						else:
 							notGarbageInfo.append('ticks: '+str(ticks)+' **__'+str(octicks)+'__**')
 						if x['heal_amount']==y['heal_amount'] and ticks==octicks:
-							notGarbageInfo.append('total healing: '+str(round(x['heal_amount'],3)))
+							notGarbageInfo.append('total healing: '+str(round(x['heal_amount']*ticks,3)))
 						else:
-							notGarbageInfo.append('total healing: '+str(round(x['heal_amount'],3))+' **__'+str(round(y['heal_amount'],3))+'__**')
+							notGarbageInfo.append('total healing: '+str(round(x['heal_amount']*ticks,3))+' **__'+str(round(y['heal_amount']*octicks,3))+'__**')
 					if notGarbageInfo:
 						output+='\n'+(', '.join(sorted([i for i in notGarbageInfo if i!='']))).replace('__','abc123').replace('_',' ').replace('abc123','__').capitalize()
 				spells[spellName]=output
