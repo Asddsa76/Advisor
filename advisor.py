@@ -90,7 +90,6 @@ async def mainAdvisor(self,message,texts):
 				except:pass
 
 print('Processing units...')
-#units=units('Twisted and Twilight.json')
 units=units('Text files/units.json')
 print('Processing spells...')
 spells=spells('Text files/spells.json')
