@@ -12,12 +12,8 @@ def spells(fileName):
 		ocJSON={}
 		for spell in loads(h.read().decode('utf-8')):
 			if '_bound' in spell['key']:continue#Don't process bound spells
-			if spell['name'] in [None, 'placeholder']:
-				print(spell)
-				continue
-			if spell['tooltip']==None:
-				print(spell)
-				continue
+			if spell['name'] in [None, 'placeholder']:continue
+			if spell['tooltip']==None:continue
 			if '_upgraded' in spell['key'] or 'Master Rune' in spell['name']:#Overcast
 				ocJSON[spell['key']]=spell
 			else:

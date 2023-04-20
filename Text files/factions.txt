@@ -20,3 +20,4 @@
 <:ogr:965233976526639134>, names_ogr_ogre_kingdom
 <:sla:965233986685255760>, names_sla_slaanesh
 <:tze:965233996755771393>, names_tze_tzeentch
+<:chd:1098626316896583790>, names_chd_chaos_dwarfs
